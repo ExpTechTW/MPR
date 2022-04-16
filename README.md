@@ -1,4 +1,4 @@
-# 模板
+# CMIR
 <img alt="Discord" src="https://img.shields.io/discord/926545182407688273">
 
 ------
@@ -14,7 +14,7 @@
 ## 依賴
 ```console
 pip install discord.py
-pip install websockets
+pip install websocket-client
 ```
 
 ## 貢獻者
