@@ -6,9 +6,16 @@
 - 這是一個 ExpTech Github 模板
 
 ## 索引
+- [依賴](#依賴)
 - [貢獻者](#貢獻者)
 - [發佈規則](#發佈規則)
 - [合作](#合作)
+
+## 依賴
+```console
+pip install discord.py
+pip install websockets
+```
 
 ## 貢獻者
 - whes1015 `文檔`
