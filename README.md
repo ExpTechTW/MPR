@@ -14,7 +14,7 @@
 ## 依賴
 ```console
 pip install discord.py
-pip install websocket-client
+pip install websockets
 ```
 
 ## 貢獻者
