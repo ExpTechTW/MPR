@@ -13,7 +13,7 @@
 
 ## 依賴
 ```console
-
+npm i node-fetch
 ```
 
 ## 貢獻者
