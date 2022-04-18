@@ -4,6 +4,13 @@ const Info = {
     "author": "whes1015"
 }
 
+const Commands = [
+    {
+        "name": "$time now",
+        "note": "查看現在時間"
+    }
+]
+
 const Event = [
     "messageCreate"
 ]
@@ -23,6 +30,7 @@ async function messageCreate(client, message) {
 
 module.exports = {
     Info,
+    Commands,
     Event,
     messageCreate
 }
