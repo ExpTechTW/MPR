@@ -3,7 +3,7 @@
 
 ------
 
-- 這是一個 ExpTech Github 模板
+- Composite Multifunctional Information Robot ( 複合式多功能資訊機器人 )
 
 ## 索引
 - [依賴](#依賴)
@@ -13,8 +13,7 @@
 
 ## 依賴
 ```console
-pip install discord.py
-pip install websockets
+
 ```
 
 ## 貢獻者
