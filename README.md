@@ -13,6 +13,7 @@
 
 ## 依賴
 ```console
+npm i discord.js
 npm i node-fetch
 ```
 
