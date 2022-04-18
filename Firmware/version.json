@@ -1,6 +1,3 @@
-[
-    {
-        "name":"downloader",
-        "ver":"1.0.0"
-    }
-]
+{
+ "JavaScript_downloader":"1.0.0"   
+}
