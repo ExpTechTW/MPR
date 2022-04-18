@@ -1,9 +1,9 @@
-# CMIR
+# MPR
 <img alt="Discord" src="https://img.shields.io/discord/926545182407688273">
 
 ------
 
-- Composite Multifunctional Information Robot ( 複合式多功能資訊機器人 )
+- Multifunctional Plugin Robot ( 多功能插件機器人 )
 
 ## 索引
 - [依賴](#依賴)
