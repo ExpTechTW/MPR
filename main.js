@@ -1,7 +1,8 @@
-let ver = "1.0.0"
+let ver = "1.1.0"
 
 var config
 
+const reload = require('require-reload')(require)
 const fs = require('fs')
 const fetch = require('node-fetch')
 const { Client, Intents } = require('discord.js')
@@ -36,7 +37,7 @@ async function init() {
         let res = await fetch(url + '/config.js')
         fs.writeFileSync(Path + '/config.js', await res.text(), 'utf8')
     }
-    config = require('./config')
+    config = reload('./config')
     if (!fs.existsSync('./Plugin/plugin.json')) {
         fs.writeFileSync('./Plugin/plugin.json', JSON.stringify([], null, "\t"), 'utf8')
     }
@@ -75,7 +76,7 @@ async function init() {
 }
 
 client.on('ready', async () => {
-    var pluginLoader = require('./Core/pluginLoader')
+    var pluginLoader = reload('./Core/pluginLoader')
     pluginLoader.ready(client)
     pluginLoader.ver(ver)
     log(`Info >> 目前登入身份 ${client.user.tag}!`)
@@ -84,7 +85,7 @@ client.on('ready', async () => {
 client.on('messageCreate', async message => {
     if (message.content.startsWith('$')) {
         if (message.content == "$info") {
-            message.reply(await require('./Core/pluginLoader').embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
+            message.reply(await reload('./Core/pluginLoader').embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
         } else if (message.content == '$init') {
             let config = {
                 "FirstSeen": new Date().getTime(),
@@ -93,18 +94,18 @@ client.on('messageCreate', async message => {
             fs.writeFileSync(Path + "/Data/config.json", JSON.stringify(config, null, "\t"), 'utf8')
             message.reply(await pluginLoader.embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
         } else if (!fs.existsSync('./Data/config.json')) {
-            message.reply(await require('./Core/pluginLoader').embed("尚未配置機器人,在任意頻道中使用 $init 配置機器人"))
-        } else if (message.content.startsWith('$plugin')) {
-            require('./Core/pluginLoader').plugin(client, message)
+            message.reply(await reload('./Core/pluginLoader').embed("尚未配置機器人,在任意頻道中使用 $init 配置機器人"))
+        } else if (message.content.startsWith('$plugin') || message.content == '$help') {
+            reload('./Core/pluginLoader').plugin(client, message)
         } else {
-            require('./Core/pluginLoader').messageCreate(client, message)
+            reload('./Core/pluginLoader').messageCreate(client, message)
         }
     }
 })
 
 async function log(msg) {
     if (fs.existsSync(Path + '/Core/pluginLoader.js')) {
-        require('./Core/pluginLoader').log(msg)
+        reload('./Core/pluginLoader').log(msg)
     } else {
         if (msg.startsWith("Info")) {
             console.log("\x1b[32m" + msg + "\x1b[0m")
