@@ -20,17 +20,6 @@
 - 更多功能可以透過安裝插件的方式添加到機器人上
 
 ## 依賴
-#### Windows
-```console
-npm i discord.js
-```
-```console
-npm install node-fetch@^2.6.6
-```
-```console
-npm i require-reload
-```
-### FreeServer
 ```console
 npm i discord.js node-fetch@^2.6.6 require-reload
 ```
