@@ -1,5 +1,5 @@
 const Info = {
-    "version": "1.1.0",
+    "version": "1.2.0",
     "pluginLoader": ["All"],
     "name": "pluginLoader",
     "author": "whes1015"
@@ -8,7 +8,8 @@ const Info = {
 const Commands = [
     {
         "name": "$help [插件]",
-        "note": "指令列表"
+        "note": "指令列表",
+        "permission": 1
     },
     {
         "name": "$init",
@@ -16,15 +17,28 @@ const Commands = [
     },
     {
         "name": "$plugin install <插件>",
-        "note": "安裝 插件"
+        "note": "安裝 插件",
+        "permission": 3
     },
     {
         "name": "$plugin uninstall <插件>",
-        "note": "卸載 插件"
+        "note": "卸載 插件",
+        "permission": 3
     },
     {
         "name": "$plugin info [插件]",
-        "note": "插件 資訊"
+        "note": "插件 資訊",
+        "permission": 3
+    },
+    {
+        "name": "$permission <用戶> <等級>",
+        "note": "設定用戶權限等級",
+        "permission": 3
+    },
+    {
+        "name": "$permission <用戶>",
+        "note": "查詢用戶權限等級",
+        "permission": 1
     }
 ]
 
@@ -38,9 +52,50 @@ const Path = path.resolve("")
 let Ver = ""
 
 async function messageCreate(client, message) {
+    let User = JSON.parse(fs.readFileSync(Path + "/permission.json").toString())
+    let find = -1
+    for (let index = 0; index < User.length; index++) {
+        if (User[index]["ID"] == message.author.id || User[index]["name"] == message.author.username) {
+            find = index
+            break
+        }
+    }
+    if (message.guild.ownerId == message.author.id) {
+        const data = {
+            "ID": message.author.id,
+            "name": message.author.username,
+            "permission": 1
+        }
+        data["permission"] = 4
+        if (find == -1) {
+            User.push(data)
+        } else {
+            User[find] = data
+        }
+    } else {
+        if (find != -1 && (User[find]["ID"] != message.author.id || User[find]["name"] != message.author.username)) {
+            User[find]["ID"] = message.author.id
+            User[find]["name"] = message.author.username
+        }
+    }
+
+    fs.writeFileSync(Path + "/permission.json", JSON.stringify(User, null, "\t"))
+
     let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
     for (let index = 0; index < plugin.length; index++) {
-        var fun = reload('../Plugin/' + plugin[index])
+        var fun = await reload('../Plugin/' + plugin[index])
+        if (message.content.startsWith("$")) {
+            for (let Index = 0; Index < fun.Commands.length; Index++) {
+                if (message.content.includes(fun.Commands[Index]["name"])) {
+                    if (fun.Commands[Index]["permission"] != undefined && await permission(message.author.id) < Number(fun.Commands[Index]["permission"])) {
+                        await message.reply(await embed(`權限不足`))
+                        return
+                    } else {
+                        break
+                    }
+                }
+            }
+        }
         if (fun.Event.includes("messageCreate")) {
             if (await compatible(fun.Info.pluginLoader)) {
                 fun.messageCreate(client, message)
@@ -62,7 +117,37 @@ async function ready(client) {
 }
 
 async function plugin(client, message) {
-    if (message.content.startsWith("$help")) {
+    if (message.content.startsWith("$permission")) {
+        let args = message.content.replace("$permission ", "").split(" ")
+        if (args.length == 1) {
+            await message.reply(await embed(`${args[0]} 權限等級 [查詢]\n${await permission(args[0])}`))
+        } else {
+            if (permission(message.author.id) < 3) {
+                await message.reply(await embed(`權限不足`))
+                return
+            }
+            let User = JSON.parse(fs.readFileSync(Path + "/permission.json").toString())
+            let find = -1
+            for (let index = 0; index < User.length; index++) {
+                if (User[index]["ID"] == args[0] || User[index]["name"] == args[0]) {
+                    find = index
+                    break
+                }
+            }
+            let data = {
+                "ID": null,
+                "name": args[0],
+                "permission": Number(args[1])
+            }
+            if (find == -1) {
+                User.push(data)
+            } else {
+                User[find] = data
+            }
+            fs.writeFileSync(Path + "/permission.json", JSON.stringify(User, null, "\t"))
+            await message.reply(await embed(`${args[0]} 權限等級 [設定]\n${await permission(args[0])}`))
+        }
+    } else if (message.content.startsWith("$help")) {
         if (message.content == "$help") {
             let msg = "指令列表\n"
             let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
@@ -99,41 +184,47 @@ async function plugin(client, message) {
             }
             await message.reply(await embed(msg))
         }
+    } else if (permission(message.author.id) < 3) {
+        await message.reply(await embed(`權限不足`))
+        return
     } else if (message.content == "$plugin check") {
         var json = await fetch("https://raw.githubusercontent.com/ExpTechTW/MPR/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/repositories.json")
         var Json = await json.json()
         let msg = "插件狀態\n"
+        let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
         for (let index = 0; index < Json.length; index++) {
-            msg = msg + "名稱: " + Json[index]["name"] + " 狀態: "
-            if (Json[index]["name"] == "pluginLoader") {
-                var fun = await reload('../Core/' + Json[index]["name"])
-            } else {
-                var fun = await reload('../Plugin/' + Json[index]["name"])
-            }
-            if (Json[index]["reclaimed"] == true) {
-                msg = msg + "🟥 已停止支援\n"
-            } else {
-                var json1 = await fetch("https://raw.githubusercontent.com/" + Json[index]["url"] + "version.json")
-                var Json1 = await json1.json()
-                if (Json1[0]["reclaimed"] == true) {
-                    msg = msg + "🟥 此 版本 已停止支援\n"
+            if (index == 0 || plugin.includes(Json[index]["name"])) {
+                msg = msg + "名稱: " + Json[index]["name"] + " 狀態: "
+                if (Json[index]["name"] == "pluginLoader") {
+                    var fun = await reload('../Core/' + Json[index]["name"])
                 } else {
-                    if (fun.Info.version == Json1[0]["name"]) {
-                        msg = msg + "🟩 已是最新版本\n"
+                    var fun = await reload('../Plugin/' + Json[index]["name"])
+                }
+                if (Json[index]["reclaimed"] == true) {
+                    msg = msg + "🟥 已停止支援\n"
+                } else {
+                    var json1 = await fetch("https://raw.githubusercontent.com/" + Json[index]["url"] + "version.json")
+                    var Json1 = await json1.json()
+                    if (Json1[0]["reclaimed"] == true) {
+                        msg = msg + "🟥 此 版本 已停止支援\n"
                     } else {
-                        if (Json1[0]["Pre-Release"] == false) {
-                            msg = msg + "🟨 發現新版本\n"
+                        if (fun.Info.version == Json1[0]["name"]) {
+                            msg = msg + "🟩 已是最新版本\n"
                         } else {
-                            for (let index = 0; index < Json1.length; index++) {
-                                if (Json1[index]["Pre-Release"] == false) {
-                                    if (Json1[index]["reclaimed"] == true) {
-                                        msg = msg + "🟥 此 版本 已停止支援\n"
-                                    } else if (fun.Info.version == Json1[index]["name"]) {
-                                        msg = msg + "🟩 已是最新版本\n"
-                                    } else {
-                                        msg = msg + "🟨 發現新版本\n"
+                            if (Json1[0]["Pre-Release"] == false) {
+                                msg = msg + "🟨 發現新版本\n"
+                            } else {
+                                for (let index = 0; index < Json1.length; index++) {
+                                    if (Json1[index]["Pre-Release"] == false) {
+                                        if (Json1[index]["reclaimed"] == true) {
+                                            msg = msg + "🟥 此 版本 已停止支援\n"
+                                        } else if (fun.Info.version == Json1[index]["name"]) {
+                                            msg = msg + "🟩 已是最新版本\n"
+                                        } else {
+                                            msg = msg + "🟨 發現新版本\n"
+                                        }
+                                        break
                                     }
-                                    break
                                 }
                             }
                         }
@@ -169,6 +260,7 @@ async function plugin(client, message) {
                     for (let index = 0; index < Json1.length; index++) {
                         if (Json1[index]["Pre-Release"] == false) {
                             msg = msg + " 最新穩定版: " + Json1[index]["name"]
+                            break
                         }
                     }
                 }
@@ -261,20 +353,30 @@ async function plugin(client, message) {
     }
 }
 
-async function edit(client, channel, msgID, MSG) {
+async function permission(user) {
+    let User = JSON.parse(fs.readFileSync(Path + "/permission.json").toString())
+    for (let index = 0; index < User.length; index++) {
+        if (User[index]["ID"] == user || User[index]["name"] == user) {
+            return Number(User[index]["permission"])
+        }
+    }
+    return 1
+}
+
+async function edit(client, channel, msgID, msg) {
     try {
         let channels = await client.channels.cache.get(channel)
-        let msg = await channels.messages.fetch(msgID)
-        msg.edit(MSG)
+        let MSG = await channels.messages.fetch(msgID)
+        MSG.edit(msg)
         return true
     } catch (error) {
         return false
     }
 }
 
-function ver(version) {
+function ver(ver) {
     if (Ver == "") {
-        Ver = version
+        Ver = ver
     } else {
         return Ver
     }
@@ -294,13 +396,13 @@ async function compatible(ver) {
     return false
 }
 
-async function downloader(path, ver) {
+async function downloader(name, ver) {
     try {
         var json = await fetch("https://raw.githubusercontent.com/ExpTechTW/MPR/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/repositories.json")
         var Json = await json.json()
         let url = ""
         for (let index = 0; index < Json.length; index++) {
-            if (Json[index]["name"] == path) {
+            if (Json[index]["name"] == name) {
                 url = Json[index]["url"]
                 if (Json[index]["reclaimed"] == true) return { state: false, res: "此插件已停止支援" }
                 break
@@ -322,21 +424,17 @@ async function downloader(path, ver) {
             if (Json[0]["reclaimed"] == true) return { state: false, res: "此 插件 版本 已停止支援" }
             ver = Json[0]["name"]
         }
-        let res = await fetch("https://raw.githubusercontent.com/" + url + "version/" + path + "-" + ver + ".js")
+        let res = await fetch("https://raw.githubusercontent.com/" + url + "version/" + name + "-" + ver + ".js")
         if (res.status != 200) {
             return { state: false, res: "無法取得下載檔案" }
         } else {
-            // if (path.includes('.json')) {
-            //     fs.writeFileSync(Path + "/Plugin/" + path + ".js", JSON.stringify(await res.text(), null, "\t"), 'utf8')
-            // } else if (path.includes('.js')) {
             let PATH = ""
-            if (path == "pluginLoader") {
-                PATH = Path + "/Core/" + path + ".js"
+            if (name == "pluginLoader") {
+                PATH = path + "/Core/" + name + ".js"
             } else {
-                PATH = Path + "/Plugin/" + path + ".js"
+                PATH = path + "/Plugin/" + name + ".js"
             }
             fs.writeFileSync(PATH, await res.text(), 'utf8')
-            //}
             return { state: true, res: ver }
         }
     } catch (error) {
@@ -365,8 +463,8 @@ async function embed(msg, color, author, icon) {
 }
 
 async function log(msg, client) {
-    let data = JSON.parse(fs.readFileSync(Path + "/Data/config.json").toString())
-    if (client != undefined) {
+    if (client != undefined && fs.existsSync('./Data/config.json')) {
+        let data = JSON.parse(fs.readFileSync(Path + "/Data/config.json").toString())
         try {
             if (msg.startsWith("Info")) {
                 msg = "🟩 " + msg
@@ -398,5 +496,6 @@ module.exports = {
     Info,
     embed,
     edit,
-    log
+    log,
+    permission
 }
