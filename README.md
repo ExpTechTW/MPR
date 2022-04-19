@@ -22,7 +22,11 @@
 ## 依賴
 ```console
 npm i discord.js
+```
+```console
 npm i node-fetch
+```
+```console
 npm i require-reload
 ```
 
