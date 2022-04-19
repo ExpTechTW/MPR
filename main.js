@@ -93,7 +93,7 @@ client.on('ready', async () => {
 client.on('messageCreate', async message => {
     if (message.content == "$info") {
         message.reply(await reload('./Core/pluginLoader').embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
-    } else if (!fs.existsSync('./Data/config.json')&&message.content == '$init') {
+    } else if (!fs.existsSync('./Data/config.json') && message.content == '$init' && message.author.id == message.guild.ownerId) {
         let config = {
             "FirstSeen": new Date().getTime(),
             "bot_console": message.channel.id
