@@ -1,4 +1,4 @@
-let ver = "1.2.0"
+let ver = "1.3.0"
 
 var config
 
@@ -40,6 +40,9 @@ async function init() {
     config = reload('./config')
     if (!fs.existsSync('./Plugin/plugin.json')) {
         fs.writeFileSync('./Plugin/plugin.json', JSON.stringify([], null, "\t"), 'utf8')
+    }
+    if (!fs.existsSync('./permission.json')) {
+        fs.writeFileSync('./permission.json', JSON.stringify([], null, "\t"), 'utf8')
     }
     if (!fs.existsSync('./Data/config.json')) {
         log("Warn >> 尚未配置機器人,在任意頻道中使用 $init 配置機器人")
@@ -83,23 +86,21 @@ client.on('ready', async () => {
 })
 
 client.on('messageCreate', async message => {
-    if (message.content.startsWith('$')) {
-        if (message.content == "$info") {
-            message.reply(await reload('./Core/pluginLoader').embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
-        } else if (message.content == '$init') {
-            let config = {
-                "FirstSeen": new Date().getTime(),
-                "bot_console": message.channel.id
-            }
-            fs.writeFileSync(Path + "/Data/config.json", JSON.stringify(config, null, "\t"), 'utf8')
-            message.reply(await pluginLoader.embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
-        } else if (!fs.existsSync('./Data/config.json')) {
-            message.reply(await reload('./Core/pluginLoader').embed("尚未配置機器人,在任意頻道中使用 $init 配置機器人"))
-        } else if (message.content.startsWith('$plugin') || message.content.startsWith('$help')) {
-            reload('./Core/pluginLoader').plugin(client, message)
-        } else {
-            reload('./Core/pluginLoader').messageCreate(client, message)
+    if (message.content == "$info") {
+        message.reply(await reload('./Core/pluginLoader').embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
+    } else if (message.content == '$init') {
+        let config = {
+            "FirstSeen": new Date().getTime(),
+            "bot_console": message.channel.id
         }
+        fs.writeFileSync(Path + "/Data/config.json", JSON.stringify(config, null, "\t"), 'utf8')
+        message.reply(await pluginLoader.embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
+    } else if (!fs.existsSync('./Data/config.json')) {
+        message.reply(await reload('./Core/pluginLoader').embed("尚未配置機器人,在任意頻道中使用 $init 配置機器人"))
+    } else if (message.content.startsWith('$plugin') || message.content.startsWith('$help') || message.content.startsWith('$permission')) {
+        reload('./Core/pluginLoader').plugin(client, message)
+    } else {
+        reload('./Core/pluginLoader').messageCreate(client, message)
     }
 })
 
