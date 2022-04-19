@@ -1,4 +1,4 @@
-let ver = "1.3.0"
+let ver = "1.4.0"
 
 var config
 
@@ -75,7 +75,12 @@ async function init() {
     } else {
         log(`Warn >> 最新版本: ${last} 當前落後最新版本 ${num} 個版本`)
     }
-    client.login(config.Token)
+    if (config.Token == "") {
+        log(`Error >> 請在 config.js 中 放入 機器人 Token`)
+        process.exit(0)
+    } else {
+        client.login(config.Token)
+    }
 }
 
 client.on('ready', async () => {
@@ -100,6 +105,7 @@ client.on('messageCreate', async message => {
     } else if (message.content.startsWith('$plugin') || message.content.startsWith('$help') || message.content.startsWith('$permission')) {
         reload('./Core/pluginLoader').plugin(client, message)
     } else {
+        if (message.author.bot) return
         reload('./Core/pluginLoader').messageCreate(client, message)
     }
 })
