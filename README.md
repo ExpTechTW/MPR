@@ -29,6 +29,7 @@ npm i require-reload
 ## 文檔
 - [使用者文檔](https://github.com/ExpTechTW/MPR/blob/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/USER.md)
 - [開發者文檔](https://github.com/ExpTechTW/MPR/blob/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/DEVELOPER.md)
+- [插件列表](https://github.com/ExpTechTW/MPR/blob/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/PLUGIN.md)
 
 ## 貢獻者
 - whes1015 `程式開發` `插件` `文檔`
