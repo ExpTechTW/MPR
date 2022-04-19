@@ -24,7 +24,7 @@
 npm i discord.js
 ```
 ```console
-npm i node-fetch
+npm install node-fetch@^2.6.6
 ```
 ```console
 npm i require-reload
