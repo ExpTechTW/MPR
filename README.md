@@ -21,7 +21,7 @@
 
 ## 依賴
 ```console
-npm i discord.js node-fetch@^2.6.6 require-reload
+npm i discord.js node-fetch@^2.6.6 require-reload axios
 ```
 
 ## 文檔
