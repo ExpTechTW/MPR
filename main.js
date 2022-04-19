@@ -1,4 +1,4 @@
-let ver = "1.4.0"
+let ver = "1.5.0"
 
 var config
 
@@ -99,8 +99,8 @@ client.on('messageCreate', async message => {
             "bot_console": message.channel.id
         }
         fs.writeFileSync(Path + "/Data/config.json", JSON.stringify(config, null, "\t"), 'utf8')
-        message.reply(await pluginLoader.embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
-    } else if (!fs.existsSync('./Data/config.json')) {
+        message.reply(await reload('./Core/pluginLoader').embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
+    } else if (!fs.existsSync('./Data/config.json') && message.author.id == message.guild.ownerId) {
         message.reply(await reload('./Core/pluginLoader').embed("尚未配置機器人,在任意頻道中使用 $init 配置機器人"))
     } else if (message.content.startsWith('$plugin') || message.content.startsWith('$help') || message.content.startsWith('$permission')) {
         reload('./Core/pluginLoader').plugin(client, message)
