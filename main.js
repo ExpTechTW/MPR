@@ -105,7 +105,6 @@ client.on('messageCreate', async message => {
     } else if (message.content.startsWith('$plugin') || message.content.startsWith('$help') || message.content.startsWith('$permission')) {
         reload('./Core/pluginLoader').plugin(client, message)
     } else {
-        if (message.author.bot) return
         reload('./Core/pluginLoader').messageCreate(client, message)
     }
 })
