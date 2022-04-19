@@ -1,5 +1,5 @@
 const Info = {
-    "version": "1.2.0",
+    "version": "1.2.1",
     "pluginLoader": ["All"],
     "name": "pluginLoader",
     "author": "whes1015"
@@ -260,12 +260,12 @@ async function plugin(client, message) {
                     for (let index = 0; index < Json1.length; index++) {
                         if (Json1[index]["Pre-Release"] == false) {
                             msg = msg + " 最新穩定版: " + Json1[index]["name"]
-                            break
+                            await message.reply(await embed(msg))
+                            return
                         }
                     }
                 }
             }
-            await message.reply(await embed(msg))
         }
     } else if (message.content.startsWith("$plugin uninstall ") || message.content.startsWith("$plugin u ")) {
         let msg = ""
