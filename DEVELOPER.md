@@ -6,6 +6,7 @@
 - [指令](#指令)
 - [權限](#權限)
 - [方法調用](#方法調用)
+- [最後](#最後)
 - [常見錯誤](#常見錯誤)
 - [範例](#範例)
 
@@ -79,6 +80,17 @@ const Commands = [
 - `pluginLoader.log()` | 日誌記錄 `msg` `client`
 - `pluginLoader.permission()` | 權限查詢 `user`
 
+## 最後
+- 別忘了把 插件 的方法導出 否則 pluginLoader 會讀取不到
+```JavaScript
+module.exports = {
+    Info,
+    Commands,
+    Event,
+    messageCreate
+}
+```
+
 ## 常見錯誤
 #### 插件 不兼容 當前 pluginLoader 版本
 - 通常是因為用戶更新 pluginLoader，導致插件不兼容，或是 插件 作者忘記修改 `"pluginLoader":[]`
@@ -88,3 +100,47 @@ const Commands = [
 - `"pluginLoader":["1.2.3"]` 表示 兼容 1.2.3 pluginLoader 版本
 - `"pluginLoader":["1.2.3","1.2.4"]` 表示 兼容 1.2.3 、 1.2.4 pluginLoader 版本
 - 功能越複雜的 插件 版本限制要越嚴格 避免 pluginLoader 變化導致 插件 出現異常
+
+## 範例
+- 一切完成之後 你的檔案看起來會像這樣
+```JavaScript
+const Info = {
+    "version": "1.0.1",
+    "pluginLoader":["1.X.X"],
+    "name": "TimeNow",
+    "author": "whes1015"
+}
+
+const Commands = [
+    {
+        "name": "$time now",
+        "note": "查看現在時間"
+    }
+]
+
+const Event = [
+    "messageCreate"
+]
+
+const pluginLoader = require('../Core/pluginLoader')
+
+async function messageCreate(client, message) {
+    if(message.content=="$time now"){
+    let now = new Date()
+    let Now = now.getFullYear() +
+        "/" + (now.getMonth() + 1) +
+        "/" + now.getDate() +
+        " " + now.getHours() +
+        ":" + now.getMinutes() +
+        ":" + now.getSeconds()
+    message.reply(await pluginLoader.embed(Now, null, Info.author, "https://raw.githubusercontent.com/ExpTechTW/API/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/image/Icon/ExpTech.png"))
+ }
+}
+
+module.exports = {
+    Info,
+    Commands,
+    Event,
+    messageCreate
+}
+```
