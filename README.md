@@ -23,6 +23,7 @@
 ```console
 npm i discord.js
 npm i node-fetch
+npm i require-reload
 ```
 
 ## 文檔
