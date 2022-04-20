@@ -14,23 +14,46 @@
 - 首先建立一個 `JavaScript` 檔案
 - 範例: `TimeNow.js` ( 不要有空格或特殊字元 )
 - 在檔案中放入 `插件資訊`
+#### 完整 Plugin 訊息
 ```JavaScript
-const Info = {
-    "version": "1.0.1", // 插件版本
-    "pluginLoader":["1.X.X"], // 兼容的 pluginLoader 版本
-    "depends":[], // 依賴 插件
-    "name": "TimeNow", // 插件名稱 須和檔名一致
-    "author": "whes1015" // 插件作者
+const Plugin={
+    "name": "TimeNow", // 插件 名稱
+    "version": "2.0.0", // 插件 版本
+    "depends":{ // 依賴
+        "index":"1.X.X", // index.js 版本
+        "pluginLoader":"2.X.X", // pluginLoader 版本
+    },
+    "Events":["messageCreate"], // 事件註冊
+    "Commands":[ // 指令註冊
+    {
+        "name": "$time now", // 指令 名稱
+        "note": "查看現在時間" // 指令 介紹
+    }
+    ],
+    "author": ["whes1015"], // 插件 作者
+    "link":"https://github.com/ExpTechTW/MPR-TimeNow", // 插件 GitHub 鏈接
+    "resources":["AGPL-3.0"], // 插件 開源協議
+    "description":"顯示現在時間" // 插件介紹
+}
+```
+#### 簡化 Plugin 訊息 ( 不建議 )
+```JavaScript
+const Plugin={
+    "name": "TimeNow", // 插件 名稱
+    "version": "2.0.0", // 插件 版本
+    "Events":["messageCreate"], // 事件註冊
+    "Commands":[ // 指令註冊
+    {
+        "name": "$time now", // 指令 名稱
+        "note": "查看現在時間" // 指令 介紹
+    }
+    ],
+    "author": ["whes1015"], // 插件 作者
 }
 ```
 
 ## 事件
 - 在檔案中放入 `事件註冊` 讓 pluginLoader 知道 插件 需要那些事件 以便在事件發生時通知 插件
-```JavaScript
-const Event = [
-    "messageCreate" // message 生成事件
-]
-```
 - 撰寫 function 功能
 ```JavaScript
 async function messageCreate(client, message) { // function 名稱需與 事件 一致
@@ -50,16 +73,7 @@ async function messageCreate(client, message) { // function 名稱需與 事件 
 - `messageCreate` message 生成事件 | `client` `message`
 
 ## 指令
-- 在檔案中放入 `指令註冊` 以便在用戶輸入 $help 時顯示
-```JavaScript
-const Commands = [
-    {
-        "name": "$time now", // 指令名稱
-        "note": "查看現在時間", // 指令介紹
-        "permission":2 // 權限等級 ( 若沒此項 默認 2 )
-    }
-]
-```
+- 在 Plugin 中放入 `指令註冊` 以便在用戶輸入 $help 時顯示
 
 ## 權限
 - pluginLoader 有自己的一套 權限系統 分為 0 ~ 4 個等級
