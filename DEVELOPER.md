@@ -20,7 +20,6 @@ const Plugin={
     "name": "TimeNow", // 插件 名稱
     "version": "2.0.0", // 插件 版本
     "depends":{ // 依賴
-        "index":"1.X.X", // index.js 版本
         "pluginLoader":"2.X.X", // pluginLoader 版本
     },
     "Events":["messageCreate"], // 事件註冊
