@@ -121,43 +121,45 @@ module.exports = {
 ## 範例
 - 一切完成之後 你的檔案看起來會像這樣
 ```JavaScript
-const Info = {
-    "version": "1.0.1",
-    "pluginLoader":["1.X.X"],
+'use strict'
+
+const Plugin = {
     "name": "TimeNow",
-    "author": "whes1015"
+    "version": "2.0.0",
+    "depends": {
+        "index": "1.X.X",
+        "pluginLoader": "2.X.X",
+    },
+    "Events": ["messageCreate"],
+    "Commands": [
+        {
+            "name": "$time now",
+            "note": "查看現在時間"
+        }
+    ],
+    "author": ["whes1015"],
+    "link": "https://github.com/ExpTechTW/MPR-TimeNow",
+    "resources": ["AGPL-3.0"],
+    "description": "顯示現在時間"
 }
-
-const Commands = [
-    {
-        "name": "$time now",
-        "note": "查看現在時間"
-    }
-]
-
-const Event = [
-    "messageCreate"
-]
 
 const pluginLoader = require('../Core/pluginLoader')
 
 async function messageCreate(client, message) {
-    if(message.content=="$time now"){
-    let now = new Date()
-    let Now = now.getFullYear() +
-        "/" + (now.getMonth() + 1) +
-        "/" + now.getDate() +
-        " " + now.getHours() +
-        ":" + now.getMinutes() +
-        ":" + now.getSeconds()
-    message.reply(await pluginLoader.embed(Now, null, Info.author, "https://raw.githubusercontent.com/ExpTechTW/API/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/image/Icon/ExpTech.png"))
- }
+    if (message.content == "$time now") {
+        let now = new Date()
+        let Now = now.getFullYear() +
+            "/" + (now.getMonth() + 1) +
+            "/" + now.getDate() +
+            " " + now.getHours() +
+            ":" + now.getMinutes() +
+            ":" + now.getSeconds()
+        message.reply(await pluginLoader.embed(Now, null, Info.author, "https://raw.githubusercontent.com/ExpTechTW/API/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/image/Icon/ExpTech.png"))
+    }
 }
 
 module.exports = {
-    Info,
-    Commands,
-    Event,
+    Plugin,
     messageCreate
 }
 ```
