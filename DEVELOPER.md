@@ -18,6 +18,7 @@
 const Info = {
     "version": "1.0.1", // 插件版本
     "pluginLoader":["1.X.X"], // 兼容的 pluginLoader 版本
+    "depends":[], // 依賴 插件
     "name": "TimeNow", // 插件名稱 須和檔名一致
     "author": "whes1015" // 插件作者
 }
