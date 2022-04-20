@@ -3,3 +3,4 @@
 |[MPR-pluginLoader](https://github.com/ExpTechTW/MPR-pluginLoader)|whes1015|MPR 插件 加載 及 管理 框架|`$plugin i pluginLoader`|`null`|
 |[MPR-TimeNow](https://github.com/ExpTechTW/MPR-TimeNow)|whes1015|顯示當前時間|`$plugin i TimeNow`|`null`|
 |[MPR-urlChecker](https://github.com/ExpTechTW/MPR-urlChecker)|whes1015|檢查網址安全性|`$plugin i urlChecker`|`axios`|
+|[HelloWorld](https://github.com/lidiali941219/MPR-HelloWorld)|lidiali941219|範例 插件|`$plugin i HelloWorld`|`null`|
