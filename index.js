@@ -1,4 +1,6 @@
-let ver = "1.7.0"
+'use strict'
+
+let ver = "2.0.0"
 
 var config
 
@@ -104,7 +106,11 @@ async function log(msg) {
 client.on('ready', async () => {
     var pluginLoader = reload('./Core/pluginLoader')
     pluginLoader.ready(client)
-    pluginLoader.ver(ver)
+    if (fs.existsSync('./Data/config.json')) {
+        let configFile = JSON.parse(fs.readFileSync('./Data/config.json').toString())
+        configFile["version"] = ver
+        fs.writeFileSync(Path + "/Data/config.json", JSON.stringify(configFile, null, "\t"), 'utf8')
+    }
     log(`Info >> 目前登入身份 ${client.user.tag} | 版本: ${ver}`)
 })
 
