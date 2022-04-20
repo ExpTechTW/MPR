@@ -58,17 +58,17 @@ const Plugin={
 - 在檔案中放入 `事件註冊` 讓 pluginLoader 知道 插件 需要那些事件 以便在事件發生時通知 插件
 - 撰寫 function 功能
 ```JavaScript
-async function messageCreate(client, message) { // function 名稱需與 事件 一致
-    if(message.content=="$time now"){ // 如果 message=$time now
-    let now = new Date()
-    let Now = now.getFullYear() +
-        "/" + (now.getMonth() + 1) +
-        "/" + now.getDate() +
-        " " + now.getHours() +
-        ":" + now.getMinutes() +
-        ":" + now.getSeconds() // 格式化 現在時間
-    message.reply(await pluginLoader.embed(Now)) // 回復訊息 ( 調用 pluginLoader.embed 方法 )
- }
+async function messageCreate(client, message) {
+    if (message.content == "$time now") {
+        let now = new Date()
+        let Now = now.getFullYear() +
+            "/" + (now.getMonth() + 1) +
+            "/" + now.getDate() +
+            " " + now.getHours() +
+            ":" + now.getMinutes() +
+            ":" + now.getSeconds()
+        message.reply(await pluginLoader.embed(Now, null, Plugin.author, "https://raw.githubusercontent.com/ExpTechTW/API/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/image/Icon/ExpTech.png"))
+    }
 }
 ```
 #### 事件列表
@@ -127,6 +127,7 @@ const Plugin = {
     "name": "TimeNow",
     "version": "2.0.0",
     "depends": {
+        "index": "1.X.X",
         "pluginLoader": "2.X.X",
     },
     "Events": ["messageCreate"],
@@ -153,7 +154,7 @@ async function messageCreate(client, message) {
             " " + now.getHours() +
             ":" + now.getMinutes() +
             ":" + now.getSeconds()
-        message.reply(await pluginLoader.embed(Now, null, Info.author, "https://raw.githubusercontent.com/ExpTechTW/API/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/image/Icon/ExpTech.png"))
+        message.reply(await pluginLoader.embed(Now, null, Plugin.author, "https://raw.githubusercontent.com/ExpTechTW/API/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/image/Icon/ExpTech.png"))
     }
 }
 
