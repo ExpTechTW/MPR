@@ -1,6 +1,6 @@
 'use strict'
 
-let ver = "2.0.0"
+let ver = "2.1.0"
 
 var config
 
@@ -40,9 +40,6 @@ async function init() {
         fs.writeFileSync(Path + '/config.js', await res.text(), 'utf8')
     }
     config = reload('./config')
-    if (!fs.existsSync('./Plugin/plugin.json')) {
-        fs.writeFileSync('./Plugin/plugin.json', JSON.stringify([], null, "\t"), 'utf8')
-    }
     if (!fs.existsSync('./permission.json')) {
         fs.writeFileSync('./permission.json', JSON.stringify([], null, "\t"), 'utf8')
     }
