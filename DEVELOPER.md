@@ -91,7 +91,7 @@ async function messageCreate(client, message) {
 #### pluginLoader 內提供了許多實用的方法 可以讓 插件 更加精簡
 - 導入 pluginLoader `const pluginLoader = require('../Core/pluginLoader')`
 #### 方法列表
-- `pluginLoader.Info` | 提供 pluginLoader 相關訊息
+- `pluginLoader.Plugin` | 提供 pluginLoader 相關訊息
 - `pluginLoader.embed()` | 封裝 embed 訊息 `msg` `[color]` `[author]` `[icon]`
 - `pluginLoader.edit()` | 編輯訊息 `client` `channel` `msgID` `msg`
 - `pluginLoader.log()` | 日誌記錄 `msg` `client`
@@ -101,9 +101,7 @@ async function messageCreate(client, message) {
 - 別忘了把 插件 的方法導出 否則 pluginLoader 會讀取不到
 ```JavaScript
 module.exports = {
-    Info,
-    Commands,
-    Event,
+    Plugin,
     messageCreate
 }
 ```
