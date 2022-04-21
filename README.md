@@ -30,8 +30,8 @@
 - 放到託管上之後就不用在理，Discord 上可以操作一切
 
 ## 原理
-- 透過 插件加載器 (pluginLoader) 加載 Plugin 資料夾底下的所有 JavaScript 檔案
-- 當 事件觸發 時讀取 插件 const Plugin 變數內的參數
+- 透過 [`插件加載器 (pluginLoader)`](https://github.com/ExpTechTW/MPR-pluginLoader/tree/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/version) 加載 Plugin 資料夾底下的所有 JavaScript 檔案
+- 當 事件觸發 時讀取 插件 `const Plugin` 變數內的參數
 
 ## 注意
 #### 插件安裝 ( 2種方法 )
