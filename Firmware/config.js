@@ -1,5 +1,8 @@
+// config 1.2
+
+const Prefix="$"
 const PreRelease=false
-const Python=false
+
 
 const Token = ""
 const API_POST = "http://150.117.110.118:10150"
@@ -16,5 +19,5 @@ module.exports = {
     API_WebSocket,
     APIkey,
     PreRelease,
-    Python
+    Prefix
 }
