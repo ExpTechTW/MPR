@@ -108,13 +108,9 @@ module.exports = {
 
 ## 常見錯誤
 #### 插件 不兼容 當前 pluginLoader 版本
-- 通常是因為用戶更新 pluginLoader，導致插件不兼容，或是 插件 作者忘記修改 `"pluginLoader":[]`
-- `"pluginLoader":["All"]` 表示 兼容 所有 pluginLoader 版本
-- `"pluginLoader":["1.X.X"]` 表示 兼容 1.0.0 ~ 1.9.9 pluginLoader 版本
-- `"pluginLoader":["1.1.X"]` 表示 兼容 1.1.0 ~ 1.1.9 pluginLoader 版本
-- `"pluginLoader":["1.2.3"]` 表示 兼容 1.2.3 pluginLoader 版本
-- `"pluginLoader":["1.2.3","1.2.4"]` 表示 兼容 1.2.3 、 1.2.4 pluginLoader 版本
-- 功能越複雜的 插件 版本限制要越嚴格 避免 pluginLoader 變化導致 插件 出現異常
+- 通常是因為用戶更新 pluginLoader，導致插件不兼容，或是 插件 作者忘記修改 `"pluginLoader":""`
+- `"pluginLoader":"*"` 表示 兼容 所有 pluginLoader 版本
+- `"pluginLoader":">=2.0.0"` 表示 兼容 2.0.0 以上 pluginLoader 版本
 
 ## 範例
 - 一切完成之後 你的檔案看起來會像這樣
