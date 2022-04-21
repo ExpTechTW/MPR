@@ -20,7 +20,7 @@ const Plugin={
     "name": "TimeNow", // 插件 名稱
     "version": "2.0.0", // 插件 版本
     "depends":{ // 依賴
-        "pluginLoader":"2.X.X", // pluginLoader 版本
+        "pluginLoader":">=3.0.0", // pluginLoader 版本
     },
     "Events":["messageCreate"], // 事件註冊
     "Commands":[ // 指令註冊
@@ -110,7 +110,7 @@ module.exports = {
 #### 插件 不兼容 當前 pluginLoader 版本
 - 通常是因為用戶更新 pluginLoader，導致插件不兼容，或是 插件 作者忘記修改 `"pluginLoader":""`
 - `"pluginLoader":"*"` 表示 兼容 所有 pluginLoader 版本
-- `"pluginLoader":">=2.0.0"` 表示 兼容 2.0.0 以上 pluginLoader 版本
+- `"pluginLoader":">=3.0.0"` 表示 兼容 3.0.0 以上 pluginLoader 版本
 
 ## 範例
 - 一切完成之後 你的檔案看起來會像這樣
@@ -119,9 +119,9 @@ module.exports = {
 
 const Plugin = {
     "name": "TimeNow",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "depends": {
-        "pluginLoader": "2.X.X"
+        "pluginLoader": ">=3.0.0"
     },
     "Events": ["messageCreate"],
     "Commands": [
