@@ -48,6 +48,7 @@ npm i discord.js node-fetch@^2.6.6 require-reload axios ws
 ## 貢獻者
 - whes1015 `程式開發` `插件` `文檔`
 - lidiali941219 `插件`
+- pisces_#0001 `主機供應`
 
 ------
 
