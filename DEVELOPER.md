@@ -18,7 +18,7 @@
 ```JavaScript
 const Plugin={
     "name": "TimeNow", // 插件 名稱
-    "version": "2.0.0", // 插件 版本
+    "version": "3.0.0", // 插件 版本
     "depends":{ // 依賴
         "pluginLoader":">=3.0.0", // pluginLoader 版本
     },
@@ -39,9 +39,9 @@ const Plugin={
 ```JavaScript
 const Plugin={
     "name": "TimeNow", // 插件 名稱
-    "version": "2.0.0", // 插件 版本
+    "version": "3.0.0", // 插件 版本
     "depends":{ // 依賴
-        "pluginLoader":"2.X.X", // pluginLoader 版本
+        "pluginLoader":">=3.0.0", // pluginLoader 版本
     },
     "Events":["messageCreate"], // 事件註冊
     "Commands":[ // 指令註冊
