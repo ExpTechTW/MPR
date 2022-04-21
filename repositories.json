@@ -28,5 +28,10 @@
 		"name": "UUID",
 		"url": "ExpTechTW/MPR-UUID/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/",
 		"reclaimed":false
+	},
+	{
+		"name": "chatBridge",
+		"url": "ExpTechTW/MPR-chatBridge/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/",
+		"reclaimed":false
 	}
 ]
