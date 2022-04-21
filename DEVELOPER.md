@@ -25,7 +25,7 @@ const Plugin={
     "Events":["messageCreate"], // 事件註冊
     "Commands":[ // 指令註冊
     {
-        "name": "$time now", // 指令 名稱
+        "name": "time now", // 指令 名稱
         "note": "查看現在時間" // 指令 介紹
     }
     ],
@@ -46,7 +46,7 @@ const Plugin={
     "Events":["messageCreate"], // 事件註冊
     "Commands":[ // 指令註冊
     {
-        "name": "$time now", // 指令 名稱
+        "name": "time now", // 指令 名稱
         "note": "查看現在時間" // 指令 介紹
     }
     ],
@@ -119,14 +119,14 @@ module.exports = {
 
 const Plugin = {
     "name": "TimeNow",
-    "version": "3.0.0",
+    "version": "3.1.0",
     "depends": {
-        "pluginLoader": ">=3.0.0"
+        "pluginLoader": ">=3.5.0"
     },
     "Events": ["messageCreate"],
     "Commands": [
         {
-            "name": "$time now",
+            "name": "time now",
             "note": "查看現在時間"
         }
     ],
@@ -136,18 +136,20 @@ const Plugin = {
     "description": "顯示現在時間"
 }
 
+
 const pluginLoader = require('../Core/pluginLoader')
 
 async function messageCreate(client, message) {
-    if (message.content == "$time now") {
-        let now = new Date()
+    if (message.content == "time now") {
+        let utc = new Date()
+        let now = new Date(utc.getTime() + utc.getTimezoneOffset() * 60 * 1000 + 60 * 60 * 8 * 1000)
         let Now = now.getFullYear() +
             "/" + (now.getMonth() + 1) +
             "/" + now.getDate() +
             " " + now.getHours() +
             ":" + now.getMinutes() +
             ":" + now.getSeconds()
-        message.reply(await pluginLoader.embed(Now, null, Plugin.author, "https://raw.githubusercontent.com/ExpTechTW/API/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/image/Icon/ExpTech.png"))
+        message.reply(await pluginLoader.embed(Now, null, Plugin.author.toString().replaceAll(",", " "), "https://raw.githubusercontent.com/ExpTechTW/API/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/image/Icon/ExpTech.png"))
     }
 }
 
