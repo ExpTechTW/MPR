@@ -2,42 +2,57 @@
 
 const Plugin = {
     "name": "pluginLoader",
-    "version": "2.0.0",
+    "version": "3.5.0",
     "depends": {
-        "index": "2.0.X"
+        "index": "2.5.X"
     },
     "Commands": [
         {
-            "name": "$help [插件]",
+            "name": "mpr",
+            "note": "關於 MPR 機器人",
+            "permission": 1
+        },
+        {
+            "name": "help [插件]",
             "note": "指令列表",
             "permission": 1
         },
         {
-            "name": "$init",
+            "name": "init",
             "note": "初始化 機器人"
         },
         {
-            "name": "$plugin install <插件>",
+            "name": "plugin list",
+            "note": "可安裝 插件 列表",
+            "permission": 3
+        },
+        {
+            "name": "plugin update",
+            "note": "將全部 插件 更新至最新 [穩定版]",
+            "permission": 3
+        },
+        {
+            "name": "plugin install <插件>",
             "note": "安裝 插件",
             "permission": 3
         },
         {
-            "name": "$plugin uninstall <插件>",
+            "name": "plugin uninstall <插件>",
             "note": "卸載 插件",
             "permission": 3
         },
         {
-            "name": "$plugin info [插件]",
+            "name": "plugin info [插件]",
             "note": "插件 資訊",
             "permission": 3
         },
         {
-            "name": "$permission <用戶> <等級>",
+            "name": "permission <用戶ID> <等級>",
             "note": "設定用戶權限等級",
             "permission": 3
         },
         {
-            "name": "$permission <用戶>",
+            "name": "permission <用戶ID>",
             "note": "查詢用戶權限等級",
             "permission": 1
         }
@@ -54,10 +69,15 @@ const { MessageEmbed } = require('discord.js')
 const fs = require('fs')
 const path = require("path")
 const Path = path.resolve("")
+const Prefix = require('../config').Prefix
 
 let Version = ""
 
 async function messageCreate(client, message) {
+    if (message.content == Prefix + "mpr") {
+        message.reply(await embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${await ver()}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
+        return
+    }
     let User = JSON.parse(fs.readFileSync(Path + "/permission.json").toString())
     let find = -1
     for (let index = 0; index < User.length; index++) {
@@ -102,12 +122,11 @@ async function messageCreate(client, message) {
     }
 
     fs.writeFileSync(Path + "/permission.json", JSON.stringify(User, null, "\t"))
-
-    let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
+    let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
             var fun = await reload('../Plugin/' + plugin[index])
-            if (message.content.startsWith("$")) {
+            if (message.content.startsWith(Prefix)) {
                 for (let Index = 0; Index < fun.Plugin.Commands.length; Index++) {
                     if (message.content.includes(fun.Plugin.Commands[Index]["name"])) {
                         if (fun.Plugin.Commands[Index]["permission"] != undefined && await permission(message.author.id) < Number(fun.Plugin.Commands[Index]["permission"])) {
@@ -120,9 +139,8 @@ async function messageCreate(client, message) {
                 }
             }
             if (fun.Plugin.Events.includes("messageCreate")) {
-                if (await compatible(fun.Plugin.depends.pluginLoader)) {
-                    fun.messageCreate(client, message)
-                }
+                message.content = message.content.replace(Prefix, "")
+                fun.messageCreate(client, message)
             }
         } catch (error) {
             log(`Error >> ${plugin[index]} 運行出錯 請向 插件 作者聯繫\n錯誤碼:\n${error}`)
@@ -131,14 +149,12 @@ async function messageCreate(client, message) {
 }
 
 async function ready(client) {
-    let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
+    let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
             var fun = reload('../Plugin/' + plugin[index])
             if (fun.Plugin.Events.includes("ready")) {
-                if (await compatible(fun.Plugin.depends.pluginLoader)) {
-                    fun.ready(client)
-                }
+                fun.ready(client)
             }
         } catch (error) {
             log(`Error >> ${plugin[index]} 運行出錯 請向 插件 作者聯繫\n錯誤碼:\n${error}`)
@@ -147,14 +163,12 @@ async function ready(client) {
 }
 
 async function messageReactionAdd(reaction, user) {
-    let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
+    let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
             var fun = reload('../Plugin/' + plugin[index])
             if (fun.Plugin.Events.includes("messageReactionAdd")) {
-                if (await compatible(fun.Plugin.depends.pluginLoader)) {
-                    fun.messageReactionAdd(reaction, user)
-                }
+                fun.messageReactionAdd(reaction, user)
             }
         } catch (error) {
             log(`Error >> ${plugin[index]} 運行出錯 請向 插件 作者聯繫\n錯誤碼:\n${error}`)
@@ -163,14 +177,12 @@ async function messageReactionAdd(reaction, user) {
 }
 
 async function channelCreate(channel) {
-    let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
+    let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
             var fun = reload('../Plugin/' + plugin[index])
             if (fun.Plugin.Events.includes("channelCreate")) {
-                if (await compatible(fun.Plugin.depends.pluginLoader)) {
-                    fun.channelCreate(channel)
-                }
+                fun.channelCreate(channel)
             }
         } catch (error) {
             log(`Error >> ${plugin[index]} 運行出錯 請向 插件 作者聯繫\n錯誤碼:\n${error}`)
@@ -179,14 +191,12 @@ async function channelCreate(channel) {
 }
 
 async function channelDelete(channel) {
-    let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
+    let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
             var fun = reload('../Plugin/' + plugin[index])
             if (fun.Plugin.Events.includes("channelDelete")) {
-                if (await compatible(fun.Plugin.depends.pluginLoader)) {
-                    fun.channelDelete(channel)
-                }
+                fun.channelDelete(channel)
             }
         } catch (error) {
             log(`Error >> ${plugin[index]} 運行出錯 請向 插件 作者聯繫\n錯誤碼:\n${error}`)
@@ -195,14 +205,12 @@ async function channelDelete(channel) {
 }
 
 async function messageReactionRemove(reaction, user) {
-    let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
+    let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
             var fun = reload('../Plugin/' + plugin[index])
             if (fun.Plugin.Events.includes("messageReactionRemove")) {
-                if (await compatible(fun.Plugin.depends.pluginLoader)) {
-                    fun.messageReactionRemove(reaction, user)
-                }
+                fun.messageReactionRemove(reaction, user)
             }
         } catch (error) {
             log(`Error >> ${plugin[index]} 運行出錯 請向 插件 作者聯繫\n錯誤碼:\n${error}`)
@@ -211,14 +219,12 @@ async function messageReactionRemove(reaction, user) {
 }
 
 async function messageDelete(message) {
-    let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
+    let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
             var fun = reload('../Plugin/' + plugin[index])
             if (fun.Plugin.Events.includes("messageDelete")) {
-                if (await compatible(fun.Plugin.depends.pluginLoader)) {
-                    fun.messageDelete(message)
-                }
+                fun.messageDelete(message)
             }
         } catch (error) {
             log(`Error >> ${plugin[index]} 運行出錯 請向 插件 作者聯繫\n錯誤碼:\n${error}`)
@@ -227,14 +233,12 @@ async function messageDelete(message) {
 }
 
 async function messageUpdate(oldmessage, newmessage) {
-    let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
+    let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
             var fun = reload('../Plugin/' + plugin[index])
             if (fun.Plugin.Events.includes("messageUpdate")) {
-                if (await compatible(fun.Plugin.depends.pluginLoader)) {
-                    fun.messageUpdate(oldmessage, newmessage)
-                }
+                fun.messageUpdate(oldmessage, newmessage)
             }
         } catch (error) {
             log(`Error >> ${plugin[index]} 運行出錯 請向 插件 作者聯繫\n錯誤碼:\n${error}`)
@@ -244,8 +248,8 @@ async function messageUpdate(oldmessage, newmessage) {
 
 async function plugin(client, message) {
     try {
-        if (message.content.startsWith("$permission")) {
-            let args = message.content.replace("$permission ", "").split(" ")
+        if (message.content.startsWith(Prefix + "permission")) {
+            let args = message.content.replace(Prefix + "permission ", "").split(" ")
             if (args.length == 1) {
                 await message.reply(await embed(`${args[0]} 權限等級 [查詢]\n${await permission(args[0])}`))
             } else {
@@ -263,8 +267,13 @@ async function plugin(client, message) {
                 }
                 let data = {
                     "ID": null,
-                    "name": args[0],
+                    "name": null,
                     "permission": Number(args[1])
+                }
+                if (isNaN(args[0])) {
+                    data.name = args[0]
+                } else {
+                    data.ID = args[0]
                 }
                 if (find == -1) {
                     User.push(data)
@@ -274,31 +283,34 @@ async function plugin(client, message) {
                 fs.writeFileSync(Path + "/permission.json", JSON.stringify(User, null, "\t"))
                 await message.reply(await embed(`${args[0]} 權限等級 [設定]\n${await permission(args[0])}`))
             }
-        } else if (message.content.startsWith("$help")) {
-            if (message.content == "$help") {
-                let msg = "指令列表\n"
-                let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
+        } else if (message.content.startsWith(Prefix + "help")) {
+            if (message.content == Prefix + "help") {
+                let msg = "指令列表\n**pluginLoader**\n"
+                let plugin = fs.readdirSync(Path + "/Plugin/")
                 for (let index = 0; index < Plugin.Commands.length; index++) {
-                    msg = msg + Plugin.Commands[index]["name"] + " : " + Plugin.Commands[index]["note"] + "\n"
+                    msg = msg + Prefix + Plugin.Commands[index]["name"] + " : " + Plugin.Commands[index]["note"] + "\n"
                 }
                 msg = msg + "\n"
                 for (let index = 0; index < plugin.length; index++) {
                     var fun = reload('../Plugin/' + plugin[index])
+                    if (fun.Plugin.Commands.length != 0) {
+                        msg = msg + `**${fun.Plugin.name}**\n`
+                    }
                     for (let index = 0; index < fun.Plugin.Commands.length; index++) {
-                        msg = msg + fun.Plugin.Commands[index]["name"] + " : " + fun.Plugin.Commands[index]["note"] + "\n"
+                        msg = msg + Prefix + fun.Plugin.Commands[index]["name"] + " : " + fun.Plugin.Commands[index]["note"] + "\n"
                     }
                     msg = msg + "\n"
                 }
                 await message.reply(await embed(msg))
             } else {
-                let args = message.content.replace("$help ", "").split(" ")
+                let args = message.content.replace(Prefix + "help ", "").split(" ")
                 let msg = `${args} 指令列表\n`
                 if (args[0] == "pluginLoader") {
                     for (let index = 0; index < Commands.length; index++) {
                         msg = msg + Commands[index]["name"] + " : " + Commands[index]["note"] + "\n"
                     }
                 } else {
-                    let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
+                    let plugin = fs.readdirSync(Path + "/Plugin/")
                     for (let index = 0; index < plugin.length; index++) {
                         if (args == plugin[index]) {
                             var fun = reload('../Plugin/' + plugin[index])
@@ -311,21 +323,29 @@ async function plugin(client, message) {
                 }
                 await message.reply(await embed(msg))
             }
-        } else if (message.content.startsWith("$plugin info")) {
-            if (message.content == "$plugin info") {
+        } else if (message.content.startsWith(Prefix + "plugin list")) {
+            message.reply(await embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n插件列表: https://github.com/ExpTechTW/MPR/blob/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/PLUGIN.md\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
+        } else if (message.content.startsWith(Prefix + "plugin update")) {
+            let plugin = fs.readdirSync(Path + "/Plugin/")
+            client.channels.cache.get(message.channel.id).send(Prefix + "plugin i pluginLoader")
+            for (let index = 0; index < plugin.length; index++) {
+                client.channels.cache.get(message.channel.id).send(Prefix + "plugin i " + plugin[index].replace(".js", ""))
+            }
+        } else if (message.content.startsWith(Prefix + "plugin info")) {
+            if (message.content == Prefix + "plugin info") {
                 var json = await fetch("https://raw.githubusercontent.com/ExpTechTW/MPR/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/repositories.json")
                 var Json = await json.json()
                 let msg = "插件列表\n"
-                let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
+                let plugin = fs.readdirSync(Path + "/Plugin/")
                 for (let index = 0; index < Json.length; index++) {
-                    if (index == 0 || plugin.includes(Json[index]["name"])) {
+                    if (index == 0 || plugin.includes(Json[index]["name"] + ".js")) {
                         msg = msg + "名稱: " + Json[index]["name"]
                         if (Json[index]["name"] == "pluginLoader") {
                             var fun = await reload('../Core/' + Json[index]["name"])
                         } else {
                             var fun = await reload('../Plugin/' + Json[index]["name"])
                         }
-                        msg = msg + " 版本: " + fun.Plugin.version + " \n作者: " + fun.Plugin.author + " 狀態: "
+                        msg = msg + " 版本: " + fun.Plugin.version + " \n作者: " + fun.Plugin.author + "\n狀態: "
                         if (Json[index]["reclaimed"] == true) {
                             msg = msg + "🟥 已停止支援\n\n"
                         } else {
@@ -369,7 +389,7 @@ async function plugin(client, message) {
                 }
                 await message.reply(await embed(msg))
             } else {
-                let args = message.content.replace("$plugin info ", "").split(" ")
+                let args = message.content.replace(Prefix + "plugin info ", "").split(" ")
                 let msg = `${args} 插件訊息\n`
                 var json = await fetch("https://raw.githubusercontent.com/ExpTechTW/MPR/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/repositories.json")
                 var Json = await json.json()
@@ -378,11 +398,15 @@ async function plugin(client, message) {
                         var json1 = await fetch("https://raw.githubusercontent.com/" + Json[index]["url"] + "version.json")
                         var Json1 = await json1.json()
                         if (Json[index]["name"] == "pluginLoader") {
-                            var fun = await reload('../Core/' + Json[index]["name"])
+                            var fun = { Plugin: Plugin }
                         } else {
                             var fun = await reload('../Plugin/' + Json[index]["name"])
                         }
-                        msg = msg + "名稱: " + fun.Plugin.name + " 版本: " + fun.Plugin.version + " 作者: " + fun.Plugin.author + "\n🔌 pluginLoader: " + fun.Plugin.depends.pluginLoader + "\n🟦 最新版本: " + Json1[0]["name"]
+                        let depends = ""
+                        for (let index = 0; index < Object.keys(fun.Plugin.depends).length; index++) {
+                            depends = depends + `名稱: ${Object.keys(fun.Plugin.depends)[index]} 版本: ${fun.Plugin.depends[Object.keys(fun.Plugin.depends)[index]]}`
+                        }
+                        msg = msg + "名稱: " + fun.Plugin.name + " 版本: " + fun.Plugin.version + "\n作者: " + fun.Plugin.author + "\n\n🔌 依賴:\n" + depends + "\n\n🟦 最新版本: " + Json1[0]["name"]
                         for (let index = 0; index < Json1.length; index++) {
                             if (Json1[index]["Pre-Release"] == false) {
                                 msg = msg + " 🟩 最新穩定版: " + Json1[index]["name"]
@@ -396,13 +420,13 @@ async function plugin(client, message) {
         } else if (await permission(message.author.id) < 3 && message.author.id != client.user.id) {
             await message.reply(await embed(`權限不足`))
             return
-        } else if (message.content.startsWith("$plugin uninstall ") || message.content.startsWith("$plugin u ")) {
+        } else if (message.content.startsWith(Prefix + "plugin uninstall ") || message.content.startsWith(Prefix + "plugin u ")) {
             let msg = ""
-            let Name = message.content.replace("$plugin uninstall ", "").replace("$plugin u ", "")
+            let Name = message.content.replace(Prefix + "plugin uninstall ", "").replace(Prefix + "plugin u ", "")
             msg = msg + "⏳ 正在檢索 插件 資料夾...\n"
             let MSG = await message.reply(await embed(msg))
-            let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
-            if (!plugin.includes(Name) || Name == "pluginLoader") {
+            let plugin = fs.readdirSync(Path + "/Plugin/")
+            if (!plugin.includes(Name + ".js") || Name == "pluginLoader") {
                 msg = msg + "🟨 未發現此 插件\n"
                 edit(client, MSG.channel.id, MSG.id, await embed(msg))
                 return
@@ -411,7 +435,6 @@ async function plugin(client, message) {
                     msg = msg + "⏳ 撤銷 事件監聽...\n⏳ 撤銷 插件訊息...\n⏳ 撤銷 插件指令...\n"
                     edit(client, MSG.channel.id, MSG.id, await embed(msg))
                     plugin.splice(plugin.indexOf(Name), 1)
-                    fs.writeFileSync(Path + "/Plugin/plugin.json", JSON.stringify(plugin, null, "\t"))
                     fs.unlinkSync(Path + "/Plugin/" + Name + ".js")
                     msg = msg + "🟩 插件 卸載 完成"
                     edit(client, MSG.channel.id, MSG.id, await embed(msg))
@@ -420,9 +443,9 @@ async function plugin(client, message) {
                     edit(client, MSG.channel.id, MSG.id, await embed(msg))
                 }
             }
-        } else if (message.content.startsWith("$plugin install ") || message.content.startsWith("$plugin i ")) {
+        } else if (message.content.startsWith(Prefix + "plugin install ") || message.content.startsWith(Prefix + "plugin i ")) {
             let msg = ""
-            let command = message.content.replace("$plugin install ", "").replace("$plugin i ", "").split(" ")
+            let command = message.content.replace(Prefix + "plugin install ", "").replace(Prefix + "plugin i ", "").split(" ")
             let Name = command[0]
             let VER = null
             msg = msg + "⏳ 正在下載 " + Name + ".js 檔案...\n"
@@ -467,28 +490,35 @@ async function plugin(client, message) {
                         edit(client, MSG.channel.id, MSG.id, await embed(msg))
                         fs.unlinkSync(Path + "/Plugin/" + Name + "-Cache.js")
                     } else {
-                        if (fun.Plugin.depends != undefined && fun.Plugin.depends.lenght != 0) {
-                            for (let index = 0; index < fun.Plugin.depends.length; index++) {
-                                let channels = await client.channels.cache.get(MSG.channel.id)
-                                await channels.send(`$plugin i ${fun.Plugin.depends[index]}`)
-                                msg = msg + `⏳ 正在安裝 ${fun.Plugin.depends[index]} 依賴插件...\n`
-                                edit(client, MSG.channel.id, MSG.id, await embed(msg))
-                            }
-                        }
                         msg = msg + "⏳ 註冊 事件監聽...\n⏳ 註冊 插件訊息...\n⏳ 註冊 插件指令...\n"
                         edit(client, MSG.channel.id, MSG.id, await embed(msg))
-                        let plugin = JSON.parse(fs.readFileSync(Path + "/Plugin/plugin.json").toString())
-                        if (!await compatible(fun.Plugin.depends.pluginLoader)) {
-                            msg = msg + "🟨 插件 不兼容 當前 pluginLoader\n解決方法:\n1. 更新 pluginLoader\n2. 請 插件 作者適配\n🟨 已清除 插件 緩存\n🟥 插件 安裝 失敗\n"
+                        let plugin = fs.readdirSync(Path + "/Plugin/")
+                        let fail = 0
+                        for (let index = 0; index < Object.keys(fun.Plugin.depends).length; index++) {
+                            if (Object.keys(fun.Plugin.depends)[index] != "pluginLoader") {
+                                if (!fs.readdirSync(Path + "/Plugin/").includes(Object.keys(fun.Plugin.depends)[index])) {
+                                    msg = msg + "🟨 未檢測到 " + Object.keys(fun.Plugin.depends)[index] + " 依賴\n"
+                                    edit(client, MSG.channel.id, MSG.id, await embed(msg))
+                                    fail = 1
+                                    continue
+                                }
+                                var cache = await reload('../Plugin/' + Object.keys(fun.Plugin.depends)[index])
+                            } else {
+                                var cache = { Plugin: Plugin }
+                            }
+                            if (!await compatible("pluginLoader", fun.Plugin.depends[Object.keys(fun.Plugin.depends)[index]], cache.Plugin.version)) {
+                                msg = msg + `🟨 插件 不兼容 當前 ${Object.keys(fun.Plugin.depends)[index]}\n⬆️ 最低: ${fun.Plugin.depends[Object.keys(fun.Plugin.depends)[index]]} ⏺️ 當前: ${cache.Plugin.version}\n`
+                                edit(client, MSG.channel.id, MSG.id, await embed(msg))
+                                fail = 1
+                            }
+                        }
+                        if (fail != 0) {
+                            msg = msg + "🟨 已清除 插件 緩存\n🟥 插件 安裝 失敗\n"
                             edit(client, MSG.channel.id, MSG.id, await embed(msg))
                             fs.unlinkSync(Path + "/Plugin/" + Name + "-Cache.js")
                             return
                         }
                         fs.renameSync(Path + "/Plugin/" + Name + "-Cache.js", Path + "/Plugin/" + Name + ".js")
-                        if (!plugin.includes(Name)) {
-                            plugin.push(Name)
-                        }
-                        fs.writeFileSync(Path + "/Plugin/plugin.json", JSON.stringify(plugin, null, "\t"))
                         msg = msg + "🟩 插件 安裝 完成\n"
                         edit(client, MSG.channel.id, MSG.id, await embed(msg))
                     }
@@ -534,20 +564,35 @@ async function ver() {
     }
 }
 
-async function compatible(ver) {
-    let Ver = Plugin.version
-    if (ver.includes(Plugin.version)) {
-        return true
-    } else if (ver.includes("All")) {
-        return true
-    } else if (ver.includes(Ver.substring(0, 1) + ".X.X")) {
-        return true
-    } else if (ver.includes(Ver.substring(0, 1) + "." + Ver.substring(2, 1) + ".X")) {
-        return true
-    } else if (Ver.includes("w") && ver.includes(Ver.substring(0, 5))) {
+async function compatible(name, depend, ver) {
+    if (fs.readdirSync(Path + "/Plugin/").includes(name) && depend == "*") return true
+    var json = await fetch("https://raw.githubusercontent.com/ExpTechTW/MPR/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/repositories.json")
+    var Json = await json.json()
+    let url = ""
+    for (let index = 0; index < Json.length; index++) {
+        if (Json[index]["name"] == name) {
+            url = Json[index]["url"]
+            break
+        }
+    }
+    if (url == "") return false
+    var json = await fetch("https://raw.githubusercontent.com/" + url + "version.json")
+    var Json = await json.json()
+    let Depend = 0
+    let Ver = 0
+    for (let index = 0; index < Json.length; index++) {
+        if (Json[index]["name"] == depend.replace(">=", "")) {
+            Depend = index
+        }
+        if (Json[index]["name"] == ver) {
+            Ver = index
+        }
+    }
+    if (Depend < Ver) {
+        return false
+    } else {
         return true
     }
-    return false
 }
 
 async function downloader(name, ver) {
