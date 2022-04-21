@@ -18,9 +18,9 @@
 ```JavaScript
 const Plugin={
     "name": "TimeNow", // 插件 名稱
-    "version": "3.0.0", // 插件 版本
+    "version": "3.1.0", // 插件 版本
     "depends":{ // 依賴
-        "pluginLoader":">=3.0.0", // pluginLoader 版本
+        "pluginLoader":">=3.5.0", // pluginLoader 版本
     },
     "Events":["messageCreate"], // 事件註冊
     "Commands":[ // 指令註冊
@@ -39,9 +39,9 @@ const Plugin={
 ```JavaScript
 const Plugin={
     "name": "TimeNow", // 插件 名稱
-    "version": "3.0.0", // 插件 版本
+    "version": "3.1.0", // 插件 版本
     "depends":{ // 依賴
-        "pluginLoader":">=3.0.0", // pluginLoader 版本
+        "pluginLoader":">=3.5.0", // pluginLoader 版本
     },
     "Events":["messageCreate"], // 事件註冊
     "Commands":[ // 指令註冊
@@ -111,6 +111,7 @@ module.exports = {
 - 通常是因為用戶更新 pluginLoader，導致插件不兼容，或是 插件 作者忘記修改 `"pluginLoader":""`
 - `"pluginLoader":"*"` 表示 兼容 所有 pluginLoader 版本
 - `"pluginLoader":">=3.0.0"` 表示 兼容 3.0.0 以上 pluginLoader 版本
+- 查看最新 `pluginLoader` 版本 [這裡](https://github.com/ExpTechTW/MPR-pluginLoader/tree/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/version)
 
 ## 範例
 - 一切完成之後 你的檔案看起來會像這樣
