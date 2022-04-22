@@ -1,9 +1,9 @@
 'use strict'
 
-let ver = "2.1.0"
+let ver = "3.0.0"
 
 var config
-
+var Prefix
 const reload = require('require-reload')(require)
 const fs = require('fs')
 const fetch = require('node-fetch')
@@ -11,6 +11,7 @@ const { Client, Intents } = require('discord.js')
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS], partials: ['MESSAGE', 'CHANNEL', 'REACTION'], })
 const path = require("path")
 const Path = path.resolve("")
+var pluginLoader = require('./Core/pluginLoader')
 
 const url = "https://raw.githubusercontent.com/ExpTechTW/CMIR/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/Firmware"
 init()
@@ -40,11 +41,12 @@ async function init() {
         fs.writeFileSync(Path + '/config.js', await res.text(), 'utf8')
     }
     config = reload('./config')
+    Prefix = config.Prefix
     if (!fs.existsSync('./permission.json')) {
         fs.writeFileSync('./permission.json', JSON.stringify([], null, "\t"), 'utf8')
     }
     if (!fs.existsSync('./Data/config.json')) {
-        log("Warn >> 尚未配置機器人,在任意頻道中使用 $init 配置機器人")
+        log(`Warn >> 尚未配置機器人,在任意頻道中使用 ${Prefix}init 配置機器人`)
     }
     log(`Info >> 正在檢查機器人版本...`)
     const res = await fetch('https://api.github.com/repos/ExpTechTW/MPR/releases')
@@ -88,7 +90,7 @@ async function init() {
 
 async function log(msg) {
     if (fs.existsSync(Path + '/Core/pluginLoader.js')) {
-        reload('./Core/pluginLoader').log(msg)
+        pluginLoader.log(msg)
     } else {
         if (msg.startsWith("Info")) {
             console.log("\x1b[32m" + msg + "\x1b[0m")
@@ -101,7 +103,6 @@ async function log(msg) {
 }
 
 client.on('ready', async () => {
-    var pluginLoader = reload('./Core/pluginLoader')
     pluginLoader.ready(client)
     if (fs.existsSync('./Data/config.json')) {
         let configFile = JSON.parse(fs.readFileSync('./Data/config.json').toString())
@@ -112,44 +113,48 @@ client.on('ready', async () => {
 })
 
 client.on('messageCreate', async message => {
-    if (message.content == "$info") {
-        message.reply(await reload('./Core/pluginLoader').embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
-    } else if (!fs.existsSync('./Data/config.json') && message.content == '$init' && message.author.id == message.guild.ownerId) {
+    if (message.content == `${Prefix}info`) {
+        message.reply(await pluginLoader.embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
+    } else if (!fs.existsSync('./Data/config.json') && message.content == `${Prefix}init` && message.author.id == message.guild.ownerId) {
         let config = {
             "FirstSeen": new Date().getTime(),
             "bot_console": message.channel.id
         }
         fs.writeFileSync(Path + "/Data/config.json", JSON.stringify(config, null, "\t"), 'utf8')
-        message.reply(await reload('./Core/pluginLoader').embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
+        message.reply(await pluginLoader.embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
     } else if (!fs.existsSync('./Data/config.json') && message.author.id == message.guild.ownerId) {
-        message.reply(await reload('./Core/pluginLoader').embed("尚未配置機器人,在任意頻道中使用 $init 配置機器人"))
-    } else if (message.content.startsWith('$plugin') || message.content.startsWith('$help') || message.content.startsWith('$permission')) {
-        reload('./Core/pluginLoader').plugin(client, message)
+        message.reply(await pluginLoader.embed(`尚未配置機器人,在任意頻道中使用 ${Prefix}init 配置機器人`))
+    } else if (message.content.startsWith(`${Prefix}plugin`) || message.content.startsWith(`${Prefix}help`) || message.content.startsWith(`${Prefix}permission`)) {
+        pluginLoader.plugin(client, message)
+    } else if (message.content.startsWith(`${Prefix}reload`)) {
+        pluginLoader = reload('./Core/pluginLoader')
+        pluginLoader.ready()
+        message.reply(await pluginLoader.embed(`⚠️ 已重新加載 pluginLoader 及 所有插件`))
     } else {
-        reload('./Core/pluginLoader').messageCreate(client, message)
+        pluginLoader.messageCreate(client, message)
     }
 })
 
 client.on('messageReactionAdd', async (reaction, user) => {
-    reload('./Core/pluginLoader').messageReactionAdd(reaction, user)
+    pluginLoader.messageReactionAdd(reaction, user)
 })
 
 client.on('messageReactionRemove', async (reaction, user) => {
-    reload('./Core/pluginLoader').messageReactionRemove(reaction, user)
+    pluginLoader.messageReactionRemove(reaction, user)
 })
 
 client.on("channelCreate", async channel => {
-    reload('./Core/pluginLoader').channelCreate(channel)
+    pluginLoader.channelCreate(channel)
 })
 
 client.on("channelDelete", async channel => {
-    reload('./Core/pluginLoader').channelDelete(channel)
+    pluginLoader.channelDelete(channel)
 })
 
 client.on("messageDelete", async (message) => {
-    reload('./Core/pluginLoader').messageDelete(message)
+    pluginLoader.messageDelete(message)
 })
 
 client.on("messageUpdate", async (Old, New) => {
-    reload('./Core/pluginLoader').messageUpdate(Old, New)
+    pluginLoader.messageUpdate(Old, New)
 })
