@@ -33,5 +33,10 @@
 		"name": "chatBridge",
 		"url": "ExpTechTW/MPR-chatBridge/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/",
 		"reclaimed":false
+	},
+	{
+		"name": "EEW",
+		"url": "ExpTechTW/MPR-EEW/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/",
+		"reclaimed":false
 	}
 ]
