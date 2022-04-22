@@ -113,7 +113,7 @@ client.on('ready', async () => {
 })
 
 client.on('messageCreate', async message => {
-    if (message.content == `${Prefix}info`) {
+    if (message.content == `${Prefix}mpr`) {
         message.reply(await pluginLoader.embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n版本: ${ver}\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
     } else if (!fs.existsSync('./Data/config.json') && message.content == `${Prefix}init` && message.author.id == message.guild.ownerId) {
         let config = {
