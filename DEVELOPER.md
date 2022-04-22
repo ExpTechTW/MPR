@@ -9,6 +9,7 @@
 - [最後](#最後)
 - [常見錯誤](#常見錯誤)
 - [範例](#範例)
+- [進階](#進階)
 
 ## 建立
 - 首先建立一個 `JavaScript` 檔案
@@ -159,3 +160,10 @@ module.exports = {
     messageCreate
 }
 ```
+
+## 進階
+#### AHL ( Always Hot Loading )
+- 總是啟用 熱加載
+- 默認為 true
+- 在 Plugin 插件訊息中 可以設定 `"AHL":false` 手動關閉
+- 默認 true 的情況下，每次調用 插件 都會觸發 熱加載，這會導致 資料 stream 或是 WebSocket 連接的中斷，如有用到上述類型的功能，可視需求關閉 AHL
