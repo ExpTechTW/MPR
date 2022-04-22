@@ -162,9 +162,9 @@ module.exports = {
 ```
 
 ## 進階
-#### AHL ( Always Hot Loading )
+#### DHL ( Dynamic Hot Loading )
 - 總是啟用 熱加載
 - 默認為 true
-- 在 Plugin 插件訊息中 可以設定 `"AHL":false` 手動關閉
-- 默認 true 的情況下，每次調用 插件 都會觸發 熱加載，這會導致 資料 stream 或是 WebSocket 連接的中斷，如有用到上述類型的功能，可視需求關閉 AHL
+- 在 Plugin 插件訊息中 可以設定 `"DHL":false` 手動關閉
+- 默認 true 的情況下，每次調用 插件 都會觸發 熱加載，這會導致 資料 stream 或是 WebSocket 連接的中斷，如有用到上述類型的功能，可視需求關閉 DHL
 - 此功能為 `pluginLoader>=4.0.0` 才有的功能，務必設定 pluginLoader 依賴 >=4.0.0
