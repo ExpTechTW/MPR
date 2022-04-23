@@ -1,6 +1,6 @@
 'use strict'
 
-let ver = "3.2.0"
+let ver = "3.3.0"
 
 let dev = true
 
@@ -16,9 +16,20 @@ const Path = path.resolve("")
 var pluginLoader
 
 const url = "https://raw.githubusercontent.com/ExpTechTW/CMIR/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/Firmware"
+
 init()
 
 async function init() {
+    if (fs.existsSync("./package.json")) {
+        let res = await fetch('https://raw.githubusercontent.com/ExpTechTW/MPR/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/package.json')
+        let json = await res.json()
+        let Json = JSON.parse(fs.readFileSync("./package.json").toString())
+        if (Object.keys(json["dependencies"]).length != Object.keys(Json["dependencies"]).length) {
+            fs.writeFileSync("./package.json", JSON.stringify(json, null, "\t"), 'utf8')
+            log("Info >> 已更新 package.json...")
+            process.exit(0)
+        }
+    }
     log("Info >> 正在初始化機器人...")
     if (!fs.existsSync(Path + "/Plugin")) {
         log("Info >> 正在建立 Plugin 資料夾...")
