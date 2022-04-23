@@ -1,6 +1,6 @@
 'use strict'
 
-let ver = "3.1.0"
+let ver = "3.2.0"
 
 let dev = true
 
@@ -43,7 +43,6 @@ async function init() {
         fs.writeFileSync(Path + '/Core/pluginLoader.js', await res.text(), 'utf8')
     }
     config = reload('./config')
-    pluginLoader = require('./Core/pluginLoader')
     Prefix = config.Prefix
     if (!fs.existsSync('./permission.json')) {
         fs.writeFileSync('./permission.json', JSON.stringify([], null, "\t"), 'utf8')
@@ -93,6 +92,7 @@ async function init() {
 
 async function log(msg) {
     if (fs.existsSync(Path + '/Core/pluginLoader.js')) {
+        pluginLoader = require('./Core/pluginLoader')
         pluginLoader.log(msg)
     } else {
         if (msg.startsWith("Info")) {
