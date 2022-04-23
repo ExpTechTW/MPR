@@ -8,3 +8,4 @@
 |[UUID](https://github.com/ExpTechTW/MPR-UUID)|whes1015|UUID 產生器|`$plugin i UUID`|`pluginLoader[>=3.5.0]`|`null`|
 |[chatBridge](https://github.com/ExpTechTW/MPR-chatBridge)|whes1015|跨群聊天|`$plugin i chatBridge`|`pluginLoader[>=3.5.0]` `UUID[>=1.0.0]`|`null`|
 |[EEW](https://github.com/ExpTechTW/MPR-EEW)|whes1015|EEW 地震速報|`$plugin i EEW`|`pluginLoader[>=4.1.0]` `UUID[>=1.0.1]`|`null`|
+|[PGA](https://github.com/ExpTechTW/MPR-PGA)|whes1015|EEW 地震速報 的 PGA 計算|`$plugin i PGA`|`pluginLoader[>=4.3.0]` `EEW[>=1.1.0]`|`null`|
