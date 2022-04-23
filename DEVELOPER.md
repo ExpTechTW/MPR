@@ -10,6 +10,7 @@
 - [常見錯誤](#常見錯誤)
 - [範例](#範例)
 - [進階](#進階)
+- [發布](#發布)
 
 ## 建立
 - 首先建立一個 `JavaScript` 檔案
@@ -168,3 +169,20 @@ module.exports = {
 - 在 Plugin 插件訊息中 可以設定 `"DHL":false` 手動關閉
 - 默認 true 的情況下，每次調用 插件 都會觸發 熱加載，這會導致 資料 stream 或是 WebSocket 連接的中斷，如有用到上述類型的功能，可視需求關閉 DHL
 - 此功能為 `pluginLoader>=4.0.0` 才有的功能，務必設定 pluginLoader 依賴 >=4.0.0
+
+## 發布
+- 標準 儲存庫 格式
+- [`/version.json`](https://github.com/ExpTechTW/MPR-UUID/blob/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/version.json) MPR 機器人 用來抓取 插件 版本資訊的文件
+- [`/version/Example-1.0.0.js`](https://github.com/ExpTechTW/MPR-UUID/blob/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/version/UUID-1.0.0.js) 插件 更新檔案
+- 必須依照下方路徑放置檔案
+- 文件樹
+```
+filetree 
+├── /version/
+│  ├── Example-1.0.0.js
+│  └── Example-2.0.0.js
+└── /version.json
+
+```
+![image](https://user-images.githubusercontent.com/44525760/164910676-36b1fea8-e1d0-49a0-ba93-7dcfa930f34d.png)
+- 最後將 `whes1015/MPR-Example/main/` 路徑 添加至 [`repositories.json`](https://github.com/ExpTechTW/MPR/blob/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/repositories.json)
