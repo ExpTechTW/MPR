@@ -1,6 +1,8 @@
 'use strict'
 
-let ver = "3.0.0"
+let ver = "3.1.0"
+
+let dev = true
 
 var config
 var Prefix
@@ -11,7 +13,7 @@ const { Client, Intents } = require('discord.js')
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS], partials: ['MESSAGE', 'CHANNEL', 'REACTION'], })
 const path = require("path")
 const Path = path.resolve("")
-var pluginLoader = require('./Core/pluginLoader')
+var pluginLoader
 
 const url = "https://raw.githubusercontent.com/ExpTechTW/CMIR/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/Firmware"
 init()
@@ -30,17 +32,18 @@ async function init() {
         log("Info >> 正在建立 /Core 資料夾...")
         fs.mkdirSync(Path + "/Core")
     }
-    if (!fs.existsSync(Path + '/Core/pluginLoader.js')) {
-        log("Info >> 正在下載 /Core/pluginLoader.js 檔案...")
-        let res = await fetch(url + '/Core/pluginLoader.js')
-        fs.writeFileSync(Path + '/Core/pluginLoader.js', await res.text(), 'utf8')
-    }
     if (!fs.existsSync(Path + '/config.js')) {
         log("Info >> 正在下載 /config.js 檔案...")
         let res = await fetch(url + '/config.js')
         fs.writeFileSync(Path + '/config.js', await res.text(), 'utf8')
     }
+    if (!fs.existsSync(Path + '/Core/pluginLoader.js')) {
+        log("Info >> 正在下載 /Core/pluginLoader.js 檔案...")
+        let res = await fetch(url + '/Core/pluginLoader.js')
+        fs.writeFileSync(Path + '/Core/pluginLoader.js', await res.text(), 'utf8')
+    }
     config = reload('./config')
+    pluginLoader = require('./Core/pluginLoader')
     Prefix = config.Prefix
     if (!fs.existsSync('./permission.json')) {
         fs.writeFileSync('./permission.json', JSON.stringify([], null, "\t"), 'utf8')
