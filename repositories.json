@@ -43,5 +43,10 @@
 		"name": "PGA",
 		"url": "ExpTechTW/MPR-PGA/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/",
 		"reclaimed":false
+	},
+	{
+		"name": "skin",
+		"url": "ExpTechTW/MPR-skin/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/",
+		"reclaimed":false
 	}
 ]
