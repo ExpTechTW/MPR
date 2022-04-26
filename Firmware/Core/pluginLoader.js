@@ -2,9 +2,9 @@
 
 const Plugin = {
     "name": "pluginLoader",
-    "version": "3.5.0",
+    "version": "4.6.0",
     "depends": {
-        "index": "2.5.X"
+        "index": ">=3.1.0"
     },
     "Commands": [
         {
@@ -20,6 +20,16 @@ const Plugin = {
         {
             "name": "init",
             "note": "初始化 機器人"
+        },
+        {
+            "name": "reload",
+            "note": "重新加載 pluginLoader",
+            "permission": 3
+        },
+        {
+            "name": "plugin reload [插件]",
+            "note": "重新加載 插件",
+            "permission": 3
         },
         {
             "name": "plugin list",
@@ -60,7 +70,8 @@ const Plugin = {
     "author": ["whes1015"], // 插件 作者
     "link": "https://github.com/ExpTechTW/MPR-pluginLoader", // 插件 GitHub 鏈接
     "resources": ["AGPL-3.0"], // 插件 開源協議
-    "description": "MPR 插件 加載 及 管理 框架" // 插件介紹
+    "description": "MPR 插件 加載 及 管理 框架", // 插件介紹
+    "DHL": false
 }
 
 const reload = require('require-reload')(require)
@@ -71,6 +82,7 @@ const path = require("path")
 const Path = path.resolve("")
 const Prefix = require('../config').Prefix
 
+let Reload = {}
 let Version = ""
 
 async function messageCreate(client, message) {
@@ -88,20 +100,8 @@ async function messageCreate(client, message) {
     }
     if (message.guild.ownerId == message.author.id) {
         let Ver = await ver()
-        if (Plugin.depends.index.substring(2, 3) == "X") {
-            if (Number(Ver.substring(0, 1)) < Number(Plugin.depends.index.substring(0, 1))) {
-                message.reply(await embed("請更新 index.js 檔案"))
-            }
-        } else {
-            if (Plugin.depends.index.substring(4, 5) == "X") {
-                if (Number(Ver.replaceAll(".", "").substring(0, 2)) < Number(Plugin.depends.index.replaceAll(".", "").replace("X", "").substring(0, 2))) {
-                    message.reply(await embed("請更新 index.js 檔案"))
-                }
-            } else {
-                if (Number(Ver.replaceAll(".", "")) < Number(Plugin.depends.index.replaceAll(".", ""))) {
-                    message.reply(await embed("請更新 index.js 檔案"))
-                }
-            }
+        if (Number(Ver.replaceAll(".", "")) < Number(Plugin.depends.index.replaceAll(".", "").replace(">=", ""))) {
+            message.reply(await embed("請更新 index.js 檔案"))
         }
         const data = {
             "ID": message.author.id,
@@ -125,7 +125,11 @@ async function messageCreate(client, message) {
     let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
-            var fun = await reload('../Plugin/' + plugin[index])
+            if (!plugin[index].includes("-Cache.js") && Reload[plugin[index]].Plugin.DHL != undefined && Reload[plugin[index]].Plugin.DHL == false) {
+                var fun = Reload[plugin[index]]
+            } else {
+                var fun = await reload('../Plugin/' + plugin[index])
+            }
             if (message.content.startsWith(Prefix)) {
                 for (let Index = 0; Index < fun.Plugin.Commands.length; Index++) {
                     if (message.content.includes(fun.Plugin.Commands[Index]["name"])) {
@@ -152,9 +156,10 @@ async function ready(client) {
     let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
-            var fun = reload('../Plugin/' + plugin[index])
-            if (fun.Plugin.Events.includes("ready")) {
-                fun.ready(client)
+            if (plugin[index].includes("-Cache")) fs.unlinkSync(Path + "/Plugin/" + plugin[index])
+            Reload[plugin[index]] = reload('../Plugin/' + plugin[index])
+            if (Reload[plugin[index]].Plugin.Events.includes("ready")) {
+                Reload[plugin[index]].ready(client)
             }
         } catch (error) {
             log(`Error >> ${plugin[index]} 運行出錯 請向 插件 作者聯繫\n錯誤碼:\n${error}`)
@@ -166,7 +171,11 @@ async function messageReactionAdd(reaction, user) {
     let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
-            var fun = reload('../Plugin/' + plugin[index])
+            if (!plugin[index].includes("-Cache.js") && Reload[plugin[index]].Plugin.DHL != undefined && Reload[plugin[index]].Plugin.DHL == false) {
+                var fun = Reload[plugin[index]]
+            } else {
+                var fun = await reload('../Plugin/' + plugin[index])
+            }
             if (fun.Plugin.Events.includes("messageReactionAdd")) {
                 fun.messageReactionAdd(reaction, user)
             }
@@ -180,7 +189,11 @@ async function channelCreate(channel) {
     let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
-            var fun = reload('../Plugin/' + plugin[index])
+            if (!plugin[index].includes("-Cache.js") && Reload[plugin[index]].Plugin.DHL != undefined && Reload[plugin[index]].Plugin.DHL == false) {
+                var fun = Reload[plugin[index]]
+            } else {
+                var fun = await reload('../Plugin/' + plugin[index])
+            }
             if (fun.Plugin.Events.includes("channelCreate")) {
                 fun.channelCreate(channel)
             }
@@ -194,7 +207,11 @@ async function channelDelete(channel) {
     let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
-            var fun = reload('../Plugin/' + plugin[index])
+            if (!plugin[index].includes("-Cache.js") && Reload[plugin[index]].Plugin.DHL != undefined && Reload[plugin[index]].Plugin.DHL == false) {
+                var fun = Reload[plugin[index]]
+            } else {
+                var fun = await reload('../Plugin/' + plugin[index])
+            }
             if (fun.Plugin.Events.includes("channelDelete")) {
                 fun.channelDelete(channel)
             }
@@ -208,7 +225,11 @@ async function messageReactionRemove(reaction, user) {
     let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
-            var fun = reload('../Plugin/' + plugin[index])
+            if (!plugin[index].includes("-Cache.js") && Reload[plugin[index]].Plugin.DHL != undefined && Reload[plugin[index]].Plugin.DHL == false) {
+                var fun = Reload[plugin[index]]
+            } else {
+                var fun = await reload('../Plugin/' + plugin[index])
+            }
             if (fun.Plugin.Events.includes("messageReactionRemove")) {
                 fun.messageReactionRemove(reaction, user)
             }
@@ -222,7 +243,11 @@ async function messageDelete(message) {
     let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
-            var fun = reload('../Plugin/' + plugin[index])
+            if (!plugin[index].includes("-Cache.js") && Reload[plugin[index]].Plugin.DHL != undefined && Reload[plugin[index]].Plugin.DHL == false) {
+                var fun = Reload[plugin[index]]
+            } else {
+                var fun = await reload('../Plugin/' + plugin[index])
+            }
             if (fun.Plugin.Events.includes("messageDelete")) {
                 fun.messageDelete(message)
             }
@@ -236,7 +261,11 @@ async function messageUpdate(oldmessage, newmessage) {
     let plugin = fs.readdirSync(Path + "/Plugin/")
     for (let index = 0; index < plugin.length; index++) {
         try {
-            var fun = reload('../Plugin/' + plugin[index])
+            if (!plugin[index].includes("-Cache.js") && !plugin[index].includes("-Cache.js") && Reload[plugin[index]].Plugin.DHL != undefined && Reload[plugin[index]].Plugin.DHL == false) {
+                var fun = Reload[plugin[index]]
+            } else {
+                var fun = await reload('../Plugin/' + plugin[index])
+            }
             if (fun.Plugin.Events.includes("messageUpdate")) {
                 fun.messageUpdate(oldmessage, newmessage)
             }
@@ -285,15 +314,21 @@ async function plugin(client, message) {
             }
         } else if (message.content.startsWith(Prefix + "help")) {
             if (message.content == Prefix + "help") {
-                let msg = "指令列表\n**pluginLoader**\n"
+                let msg = "**pluginLoader**\n"
                 let plugin = fs.readdirSync(Path + "/Plugin/")
                 for (let index = 0; index < Plugin.Commands.length; index++) {
                     msg = msg + Prefix + Plugin.Commands[index]["name"] + " : " + Plugin.Commands[index]["note"] + "\n"
                 }
                 msg = msg + "\n"
                 for (let index = 0; index < plugin.length; index++) {
-                    var fun = reload('../Plugin/' + plugin[index])
+                    if (!plugin[index].includes("-Cache.js") && Reload[plugin[index]].Plugin.DHL != undefined && Reload[plugin[index]].Plugin.DHL == false) {
+                        var fun = Reload[plugin[index]]
+                    } else {
+                        var fun = await reload('../Plugin/' + plugin[index])
+                    }
                     if (fun.Plugin.Commands.length != 0) {
+                        await message.reply(await embed(msg))
+                        msg = ""
                         msg = msg + `**${fun.Plugin.name}**\n`
                     }
                     for (let index = 0; index < fun.Plugin.Commands.length; index++) {
@@ -304,24 +339,57 @@ async function plugin(client, message) {
                 await message.reply(await embed(msg))
             } else {
                 let args = message.content.replace(Prefix + "help ", "").split(" ")
-                let msg = `${args} 指令列表\n`
+                let msg = `**${args}**\n`
                 if (args[0] == "pluginLoader") {
-                    for (let index = 0; index < Commands.length; index++) {
-                        msg = msg + Commands[index]["name"] + " : " + Commands[index]["note"] + "\n"
+                    for (let index = 0; index < Plugin.Commands.length; index++) {
+                        msg = msg + Plugin.Commands[index]["name"] + " : " + Plugin.Commands[index]["note"] + "\n"
                     }
                 } else {
                     let plugin = fs.readdirSync(Path + "/Plugin/")
                     for (let index = 0; index < plugin.length; index++) {
-                        if (args == plugin[index]) {
-                            var fun = reload('../Plugin/' + plugin[index])
+                        if (args + ".js" == plugin[index]) {
+                            if (!plugin[index].includes("-Cache.js") && Reload[plugin[index]].Plugin.DHL != undefined && Reload[plugin[index]].Plugin.DHL == false) {
+                                var fun = Reload[plugin[index]]
+                            } else {
+                                var fun = await reload('../Plugin/' + plugin[index])
+                            }
                             for (let index = 0; index < fun.Plugin.Commands.length; index++) {
-                                msg = msg + fun.Plugin.Commands[index]["name"] + " : " + fun.Plugin.Commands[index]["note"] + "\n"
+                                msg = msg + Prefix + fun.Plugin.Commands[index]["name"] + " : " + fun.Plugin.Commands[index]["note"] + "\n"
                             }
                             msg = msg + "\n"
                         }
                     }
                 }
                 await message.reply(await embed(msg))
+            }
+        } else if (message.content.startsWith(Prefix + "plugin reload")) {
+            if (message.content == Prefix + "plugin reload") {
+                let plugin = fs.readdirSync(Path + "/Plugin/")
+                for (let index = 0; index < plugin.length; index++) {
+                    try {
+                        Reload[plugin[index]] = reload('../Plugin/' + plugin[index])
+                    } catch (error) {
+                        log(`Error >> ${plugin[index]} 運行出錯 請向 插件 作者聯繫\n錯誤碼:\n${error}`)
+                    }
+                }
+                await message.reply(await embed(`⚠️ 已重新加載 所有插件 僅對關閉 DHL 的插件有效`))
+            } else {
+                let args = message.content.replace(Prefix + "plugin reload ", "").split(" ")
+                if (fs.readdirSync(Path + "/Plugin/").includes(args[0] + ".js")) {
+                    var fun = reload('../Plugin/' + args[0] + ".js")
+                    if (fun.Plugin.DHL != undefined && fun.Plugin.DHL == false) {
+                        try {
+                            Reload[args[0] + ".js"] = fun
+                            await message.reply(await embed(`⚠️ 已重新加載 ${args[0]}`))
+                        } catch (error) {
+                            log(`Error >> ${plugin[index]} 運行出錯 請向 插件 作者聯繫\n錯誤碼:\n${error}`)
+                        }
+                    } else {
+                        await message.reply(await embed(`⚠️ 此 插件 已啟用 DHL`))
+                    }
+                } else {
+                    await message.reply(await embed(`🟥 未發現此 插件`))
+                }
             }
         } else if (message.content.startsWith(Prefix + "plugin list")) {
             message.reply(await embed(`**MPR**\nMultifunctional Plugin Robot\n多功能插件機器人\n\n插件列表: https://github.com/ExpTechTW/MPR/blob/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/PLUGIN.md\n\nGitHub\nhttps://github.com/ExpTechTW/MPR`))
@@ -406,7 +474,7 @@ async function plugin(client, message) {
                         for (let index = 0; index < Object.keys(fun.Plugin.depends).length; index++) {
                             depends = depends + `名稱: ${Object.keys(fun.Plugin.depends)[index]} 版本: ${fun.Plugin.depends[Object.keys(fun.Plugin.depends)[index]]}`
                         }
-                        msg = msg + "名稱: " + fun.Plugin.name + " 版本: " + fun.Plugin.version + "\n作者: " + fun.Plugin.author + "\n\n🔌 依賴:\n" + depends + "\n\n🟦 最新版本: " + Json1[0]["name"]
+                        msg = msg + "名稱: " + fun.Plugin.name + " 版本: " + fun.Plugin.version + "\n作者: " + fun.Plugin.author + "\n\n🔌 DHL ( Dynamic Hot Loading ):\n" + ((fun.Plugin.DHL) ?? "true") + "\n\n🔌 依賴:\n" + depends + "\n\n🟦 最新版本: " + Json1[0]["name"]
                         for (let index = 0; index < Json1.length; index++) {
                             if (Json1[index]["Pre-Release"] == false) {
                                 msg = msg + " 🟩 最新穩定版: " + Json1[index]["name"]
@@ -482,32 +550,52 @@ async function plugin(client, message) {
                 try {
                     msg = msg + "⏳ 正在讀取文件...\n"
                     edit(client, MSG.channel.id, MSG.id, await embed(msg))
-                    var fun = await reload('../Plugin/' + Name + "-Cache")
+                    let body = fs.readFileSync(Path + '/Plugin/' + Name + "-Cache.js").toString().replaceAll("\r", "").split("\n")
+                    let find = 0
+                    let Body = "{"
+                    let BODY = {}
+                    for (let index = 0; index < body.length; index++) {
+                        if (body[index].includes("Plugin")) {
+                            find = 1
+                        } else if (find == 1) {
+                            Body = Body + body[index]
+                            try {
+                                BODY = JSON.parse(Body)
+                            } catch (err) {
+                                continue
+                            }
+                        }
+                    }
                     msg = msg + "⏳ 校驗文件合法性...\n"
                     edit(client, MSG.channel.id, MSG.id, await embed(msg))
-                    if (fun.Plugin == undefined || fun.Plugin.Events == undefined || fun.Plugin.Commands == undefined || fun.Plugin.version == undefined || fun.Plugin.name == undefined || fun.Plugin.author == undefined || fun.Plugin.depends == undefined || fun.Plugin.depends.pluginLoader == undefined) {
+                    if (BODY == {} || BODY.Events == undefined || BODY.Commands == undefined || BODY.version == undefined || BODY.name == undefined || BODY.author == undefined || BODY.depends == undefined || BODY.depends.pluginLoader == undefined) {
                         msg = msg + "🟨 已清除 插件 緩存\n🟥 文件內容不合法 請向 插件 作者聯繫\n"
                         edit(client, MSG.channel.id, MSG.id, await embed(msg))
                         fs.unlinkSync(Path + "/Plugin/" + Name + "-Cache.js")
                     } else {
+                        if (BODY.DHL == undefined || BODY.DHL == true) {
+                            msg = msg + "🟦 啟用 DHL 模式\n"
+                        } else {
+                            msg = msg + "🟨 未啟用 DHL 模式\n"
+                        }
+                        edit(client, MSG.channel.id, MSG.id, await embed(msg))
                         msg = msg + "⏳ 註冊 事件監聽...\n⏳ 註冊 插件訊息...\n⏳ 註冊 插件指令...\n"
                         edit(client, MSG.channel.id, MSG.id, await embed(msg))
-                        let plugin = fs.readdirSync(Path + "/Plugin/")
                         let fail = 0
-                        for (let index = 0; index < Object.keys(fun.Plugin.depends).length; index++) {
-                            if (Object.keys(fun.Plugin.depends)[index] != "pluginLoader") {
-                                if (!fs.readdirSync(Path + "/Plugin/").includes(Object.keys(fun.Plugin.depends)[index])) {
-                                    msg = msg + "🟨 未檢測到 " + Object.keys(fun.Plugin.depends)[index] + " 依賴\n"
+                        for (let index = 0; index < Object.keys(BODY.depends).length; index++) {
+                            if (Object.keys(BODY.depends)[index] != "pluginLoader") {
+                                if (!fs.readdirSync(Path + "/Plugin/").includes(Object.keys(BODY.depends)[index] + ".js")) {
+                                    msg = msg + "🟨 未檢測到 " + Object.keys(BODY.depends)[index] + " 依賴\n"
                                     edit(client, MSG.channel.id, MSG.id, await embed(msg))
                                     fail = 1
                                     continue
                                 }
-                                var cache = await reload('../Plugin/' + Object.keys(fun.Plugin.depends)[index])
+                                var cache = await reload('../Plugin/' + Object.keys(BODY.depends)[index])
                             } else {
                                 var cache = { Plugin: Plugin }
                             }
-                            if (!await compatible("pluginLoader", fun.Plugin.depends[Object.keys(fun.Plugin.depends)[index]], cache.Plugin.version)) {
-                                msg = msg + `🟨 插件 不兼容 當前 ${Object.keys(fun.Plugin.depends)[index]}\n⬆️ 最低: ${fun.Plugin.depends[Object.keys(fun.Plugin.depends)[index]]} ⏺️ 當前: ${cache.Plugin.version}\n`
+                            if (!await compatible("pluginLoader", BODY.depends[Object.keys(BODY.depends)[index]], cache.Plugin.version)) {
+                                msg = msg + `🟨 插件 不兼容 當前 ${Object.keys(BODY.depends)[index]}\n⬆️ 最低: ${BODY.depends[Object.keys(BODY.depends)[index]]} ⏺️ 當前: ${cache.Plugin.version}\n`
                                 edit(client, MSG.channel.id, MSG.id, await embed(msg))
                                 fail = 1
                             }
@@ -521,6 +609,7 @@ async function plugin(client, message) {
                         fs.renameSync(Path + "/Plugin/" + Name + "-Cache.js", Path + "/Plugin/" + Name + ".js")
                         msg = msg + "🟩 插件 安裝 完成\n"
                         edit(client, MSG.channel.id, MSG.id, await embed(msg))
+                        ready()
                     }
                 } catch (error) {
                     msg = msg + `🟨 已清除 插件 緩存\n🟥 插件 安裝 過程出錯了 請向 插件 作者聯繫\n錯誤碼:\n${error}\n`
