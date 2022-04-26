@@ -2,7 +2,7 @@
 
 const Plugin = {
     "name": "pluginLoader",
-    "version": "4.6.0",
+    "version": "4.8.0",
     "depends": {
         "index": ">=3.1.0"
     },
@@ -158,6 +158,20 @@ async function ready(client) {
         try {
             if (plugin[index].includes("-Cache")) fs.unlinkSync(Path + "/Plugin/" + plugin[index])
             Reload[plugin[index]] = reload('../Plugin/' + plugin[index])
+            if (Reload[plugin[index]].Plugin.Events.includes("onLoad")) {
+                Reload[plugin[index]].onLoad(client)
+            }
+        } catch (error) {
+            log(`Error >> ${plugin[index]} 運行出錯 請向 插件 作者聯繫\n錯誤碼:\n${error}`)
+        }
+    }
+    for (let index = 0; index < plugin.length; index++) {
+        try {
+            if (!plugin[index].includes("-Cache.js") && Reload[plugin[index]].Plugin.DHL != undefined && Reload[plugin[index]].Plugin.DHL == false) {
+                var fun = Reload[plugin[index]]
+            } else {
+                var fun = await reload('../Plugin/' + plugin[index])
+            }
             if (Reload[plugin[index]].Plugin.Events.includes("ready")) {
                 Reload[plugin[index]].ready(client)
             }
