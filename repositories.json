@@ -48,5 +48,10 @@
 		"name": "skin",
 		"url": "ExpTechTW/MPR-skin/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/",
 		"reclaimed":false
+	},
+	{
+		"name": "DataBase",
+		"url": "ExpTechTW/MPR-DataBase/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/",
+		"reclaimed":false
 	}
 ]
