@@ -2,7 +2,7 @@
 
 const Plugin = {
     "name": "pluginLoader",
-    "version": "4.8.0",
+    "version": "4.8.5",
     "depends": {
         "index": ">=3.1.0"
     },
@@ -491,7 +491,7 @@ async function plugin(client, message) {
                         msg = msg + "名稱: " + fun.Plugin.name + " 版本: " + fun.Plugin.version + "\n作者: " + fun.Plugin.author + "\n\n🔌 DHL ( Dynamic Hot Loading ):\n" + ((fun.Plugin.DHL) ?? "true") + "\n\n🔌 依賴:\n" + depends + "\n\n🟦 最新版本: " + Json1[0]["name"]
                         for (let index = 0; index < Json1.length; index++) {
                             if (Json1[index]["Pre-Release"] == false) {
-                                msg = msg + " 🟩 最新穩定版: " + Json1[index]["name"]
+                                msg = msg + " 🟩 最新穩定版: " + Json1[index]["name"] + "\n\n🟦 更新日誌\n" + Json1[0]["note"]
                                 break
                             }
                         }
@@ -553,12 +553,14 @@ async function plugin(client, message) {
                 } else {
                     msg = msg + "🟨 未使用 嚴格模式\n"
                 }
+                msg = msg + "🟦 更新日誌\n" + down.note + "\n"
                 edit(client, MSG.channel.id, MSG.id, await embed(msg))
                 msg = msg + "🟦 下載完成 版本: " + down.res + "\n"
                 edit(client, MSG.channel.id, MSG.id, await embed(msg))
                 if (Name == "pluginLoader") {
                     msg = msg + "🟩 pluginLoader 更新 完成"
                     edit(client, MSG.channel.id, MSG.id, await embed(msg))
+                    client.channels.cache.get(message.channel.id).send(Prefix + "reload")
                     return
                 }
                 try {
@@ -623,7 +625,7 @@ async function plugin(client, message) {
                         fs.renameSync(Path + "/Plugin/" + Name + "-Cache.js", Path + "/Plugin/" + Name + ".js")
                         msg = msg + "🟩 插件 安裝 完成\n"
                         edit(client, MSG.channel.id, MSG.id, await embed(msg))
-                        ready()
+                        ready(client)
                     }
                 } catch (error) {
                     msg = msg + `🟨 已清除 插件 緩存\n🟥 插件 安裝 過程出錯了 請向 插件 作者聯繫\n錯誤碼:\n${error}\n`
@@ -703,6 +705,7 @@ async function downloader(name, ver) {
         var json = await fetch("https://raw.githubusercontent.com/ExpTechTW/MPR/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/repositories.json")
         var Json = await json.json()
         let url = ""
+        let note = ""
         for (let index = 0; index < Json.length; index++) {
             if (Json[index]["name"] == name) {
                 url = Json[index]["url"]
@@ -718,6 +721,7 @@ async function downloader(name, ver) {
                 if (Json[index]["Pre-Release"] == false) {
                     if (Json[index]["reclaimed"] == true) return { state: false, res: "此 插件 版本 已停止支援" }
                     ver = Json[index]["name"]
+                    note = Json[index]["note"]
                     break
                 }
             }
@@ -725,10 +729,13 @@ async function downloader(name, ver) {
         else if (ver == "dev") {
             if (Json[0]["reclaimed"] == true) return { state: false, res: "此 插件 版本 已停止支援" }
             ver = Json[0]["name"]
+            note = Json[index]["note"]
         } else {
             for (let index = 0; index < Json.length; index++) {
                 if (Json[index]["name"] == ver) {
-                    if (Json[index]["reclaimed"] == true) return { state: false, res: "此 插件 版本 已停止支援" }
+                    if (Json[index]["reclaimed"] == true) { return { state: false, res: "此 插件 版本 已停止支援" } } else {
+                        note = Json[index]["note"]
+                    }
                     break
                 }
             }
@@ -746,7 +753,7 @@ async function downloader(name, ver) {
             }
             let text = await res.text()
             fs.writeFileSync(PATH, text, 'utf8')
-            return { state: true, res: ver, safe: text.replaceAll('"', "").replaceAll("'", "").replaceAll(" ", "").startsWith('usestrict') }
+            return { state: true, res: ver, safe: text.replaceAll('"', "").replaceAll("'", "").replaceAll(" ", "").startsWith('usestrict'), note: note }
         }
     } catch (error) {
         return { state: false, res: error }
