@@ -1,8 +1,6 @@
 'use strict'
 
-let ver = "3.3.0"
-
-let dev = true
+let ver = "3.5.0"
 
 var config
 var Prefix
@@ -142,7 +140,7 @@ client.on('messageCreate', async message => {
         pluginLoader.plugin(client, message)
     } else if (message.content.startsWith(`${Prefix}reload`)) {
         pluginLoader = reload('./Core/pluginLoader')
-        pluginLoader.ready()
+        pluginLoader.ready(client)
         message.reply(await pluginLoader.embed(`⚠️ 已重新加載 pluginLoader 及 所有插件`))
     } else {
         pluginLoader.messageCreate(client, message)
