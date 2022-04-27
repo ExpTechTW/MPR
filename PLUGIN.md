@@ -12,3 +12,4 @@
 |[skin](https://github.com/ExpTechTW/MPR-skin)|whes1015|Minecraft 皮膚/披風 查詢|`$plugin i skin`|`pluginLoader[>=4.0.0]`|`null`|
 |[DataBase](https://github.com/ExpTechTW/MPR-DataBase)|whes1015|一個輕量級的資料庫|`$plugin i DataBase`|`pluginLoader[>=4.7.0]`|`null`|
 |[KeyWord](https://github.com/ExpTechTW/MPR-KeyWord)|whes1015|關鍵字回覆|`$plugin i KeyWord`|`pluginLoader[>=4.7.0] DataBase[>=1.1.0]`|`null`|
+|[MineBridge](https://github.com/ExpTechTW/MPR-MineBridge)|whes1015|Minecraft Fabric 和 Discord 的 溝通 橋梁|`$plugin i KeyWord`|`pluginLoader[>=4.7.0] DataBase[>=1.1.0]` `UUID[>=1.0.1]`|`null`|
