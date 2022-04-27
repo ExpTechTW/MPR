@@ -58,5 +58,10 @@
 		"name": "KeyWord",
 		"url": "ExpTechTW/MPR-KeyWord/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/",
 		"reclaimed":false
+	},
+		{
+		"name": "ExpTech",
+		"url": "ExpTechTW/MPR-ExpTech/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/",
+		"reclaimed":false
 	}
 ]
