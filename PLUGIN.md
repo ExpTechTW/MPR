@@ -13,3 +13,4 @@
 |[DataBase](https://github.com/ExpTechTW/MPR-DataBase)|whes1015|一個輕量級的資料庫|`$plugin i DataBase`|`pluginLoader[>=4.7.0]`|`null`|
 |[KeyWord](https://github.com/ExpTechTW/MPR-KeyWord)|whes1015|關鍵字回覆|`$plugin i KeyWord`|`pluginLoader[>=4.7.0] DataBase[>=1.1.0]`|`null`|
 |[MineBridge](https://github.com/ExpTechTW/MPR-MineBridge)|whes1015|Minecraft Fabric 和 Discord 的 溝通 橋梁|`$plugin i KeyWord`|`pluginLoader[>=4.7.0] DataBase[>=1.1.0]` `UUID[>=1.0.1]`|`null`|
+|[Level](https://github.com/ExpTechTW/MPR-Level)|whes1015|Discord 等級系統|`$plugin i Level`|`pluginLoader[>=4.8.5] DataBase[>=3.0.0]` `UUID[>=1.0.1]`|`null`|
